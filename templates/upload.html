@@ -1,0 +1,24 @@
+<html>
+   <body>
+      <form action = "http://localhost:5000/uploader" method = "POST" 
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" />
+         <br>
+         <input value="AAPL" name="textBox">
+         <br>
+         <label for="stocks">Choose a stock:</label>
+         <select name="stocks" id="stocks">
+         <option value=""></option>
+           <option value="LLOY">LLOY</option>
+           <option value="MRO">MRO</option>
+           <option value="KGF">KGF</option>
+           <option value="VOD">VOD</option>
+         </select>
+         <br>
+         <a href="/progress.html"> page 1</a>
+         <a href="progress.html"> page 2</a>
+         <a href="/var/www/html/FlaskStuff/async_flask/templates/progress.html"> page 3</a>
+         <input type = "submit"/>
+      </form>   
+   </body>
+</html>
