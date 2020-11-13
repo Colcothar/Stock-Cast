@@ -1,6 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500&family=Poppins&display=swap');
 
 html, body { 
     background-color: #333333; 
@@ -12,7 +11,7 @@ html, body {
 #title{
   font-family: 'Oswald', sans-serif;
   text-align: center;
-  text-decoration: underline white 3px
+  text-decoration: underline white 3px;
 }
 
 .text{
@@ -34,6 +33,7 @@ html, body {
   width: 70%;
   height: 40%;
   background-color: #203575;
+  font-size: 170%;
 }
 
 
@@ -44,6 +44,15 @@ h1{
 	color: white;
 }
 
+h2{
+  font-family: 'Oswald', sans-serif !important ;
+	font-size: 200%;
+	font-weight: bold;
+	color: white;
+  margin-left: 5%;
+  text-decoration: underline #333333 4px;
+  
+}
 .indent{
   padding-left: 10%;
 }
@@ -79,7 +88,11 @@ h1{
      background: #0071BC;
 }
 
-
+.predictionImage{
+  height: 40%;
+  width: 20%;
+  margin-left: 5%;
+}
 
 .btn {
   border:3px solid;
@@ -88,7 +101,6 @@ h1{
   text-align: left;
   font-size: 150%;
   cursor: pointer;
-  color: black;
   display: inline-block;
   transition: background 0.5s ease-in-out;
   height:90%;
@@ -109,19 +121,26 @@ h1{
 .row {
     display: table-row;
     width: 100%;
+  height:100%;
 }
+
+.threeRow {
+    display: table-row;
+    width: 100%;
+  height:33.3%;
+}
+
 .box {
     display: table-cell;
     width: 33%;
     border-right: 4px solid ;
     border-color: #333333; 
     height: inherit;
-    width: 31%;
     vertical-align: middle;
     text-align: center;
     color:white;
-    font-size: 250%;
-  text-decoration: underline white 3px; 
+
+ /* text-decoration: underline white 3px; */
 }
    
 input[type=submit] {
@@ -141,12 +160,33 @@ input[type=submit] {
   width: 70%;
   height: 20%;
   background-color: #203575;
+  transition: background 0.5s ease-in-out;
 }
 
 input[type=submit]:hover {
   background: #0071BC;
+  
 }
 
 input[type="text"] {
     width: 200px;
+}
+
+.downloadBtn{
+  margin-top: 4%;
+   border-left: 3px solid;
+  border-color: #162550;  
+  background-color: #201F58;
+ 
+  cursor: pointer;
+  transition: background 0.5s ease-in-out;
+  width: 15%;
+  height: 10%;
+  border-radius: 15px;
+  font-family: 'Oswald', sans-serif !important ;
+  letter-spacing: 1px;
+  text-align: middle;
+  font-size: 120%;
+  color: white;
+  border: none;
 }
