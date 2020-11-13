@@ -1,0 +1,145 @@
+<html>
+
+<head>
+    <title>StockPredictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <div id="title">
+        <h1> Stock Predictor
+        </h1>
+    </div>
+
+    <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; " class="menuBtn">Basic
+    </button>
+
+    <button onclick="window.location.href='advanced';" style="margin-left: 10%; background-color: #201F58;"
+        class="menuBtn">Advanced
+    </button>
+
+    <div style="font-size: 200%;" class="DataContainer">
+
+        <div class="table">
+
+            <div class="threeRow">
+
+                <div class="box">
+
+                    <form action="http://localhost:5000/uploader" method="POST" enctype="multipart/form-data"></form>
+
+                        Upload training data
+                        <br>
+                        <input type="file" name="file" />
+                </div>
+
+                <div class="box">
+                    <label for="stocks">Set number of input batches:</label><br>
+                    <select style="width: 20%;" name="stocks" id="stocks">
+                        <option value="">
+                        </option>
+                        <option value="1">1
+                        </option> 
+                        <option value="2">2
+                        </option>
+                        <option value="3">3
+                        </option>
+                        <option value="4">4
+                        </option>
+                    </select>
+                </div>
+
+                <div style="border-right: 0px;" class="box">
+                    <label for="stocks">Activiation Layer</label><br>
+                    <select style="width: 20%;" name="stocks" id="stocks">
+                        <option value="">
+                        </option>
+                        <option value="relu">relu
+                        </option>
+                        <option value="2">2
+                        </option>
+                        <option value="3">3
+                        </option>
+                        <option value="4">4
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="threeRow">
+                <div class="box">
+
+                        Upload prediction data
+                        <br>
+                        <input type="file" name="file" />
+
+
+                </div>
+                <div class="box">
+                    <label for="stocks">Set number of output batches:</label><br>
+                    <select style="width: 20%;" name="stocks" id="stocks">
+                        <option value="">
+                        </option>
+                        <option value="1">1
+                        </option>
+                        <option value="2">2
+                        </option>
+                        <option value="3">3
+                        </option>
+                        <option value="4">4
+                        </option>
+                    </select>
+                </div>
+
+                <div style="border-right: 0px;" class="box">
+                    <label for="stocks">Loss function:</label><br>
+                    <select style="width: 20%;" name="stocks" id="stocks">
+                        <option value="">
+                        </option>
+                        <option value="mse">mse
+                        </option>
+                        <option value="2">2
+                        </option>
+                        <option value="3">3
+                        </option>
+                        <option value="4">4
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="threeRow">
+
+                <div class="box">
+
+                </div>
+
+
+                <div class="box">
+                    Enter number of epochs
+                    <br>
+                    <input type="text" value="100" name="textBox">
+                </div>
+
+                <div style="border-right: 0px;" class="box">
+                    <label for="stocks">Loss function:</label><br>
+                    <select style="width: 20%;" name="stocks" id="stocks">
+                        <option value="">
+                        </option>
+                        <option value="Yes">Yes
+                        </option>
+                        <option value="No">No
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <input class="DataContainer" value="GO" type="submit" />
+    </form>
+
+</body>
+
+</html>
