@@ -1,0 +1,152 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
+
+html, body { 
+    background-color: #333333; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    height: 100%;
+}
+#title{
+  font-family: 'Oswald', sans-serif;
+  text-align: center;
+  text-decoration: underline white 3px
+}
+
+.text{
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 1%;
+}
+
+
+.DataContainer{
+  position: relative;
+  border:3px solid;
+  border-color: #162550;    
+  border-radius: 15px;
+  font-family: 'Oswald', sans-serif !important ;
+  background-color: #203575;
+  margin-top:2%;
+  margin-left: 15%;
+  display: block;
+  width: 70%;
+  height: 40%;
+  background-color: #203575;
+}
+
+
+h1{
+	font-family: 'Oswald', sans-serif !important ;
+	font-size: 400%;
+	font-weight: bold;
+	color: white;
+}
+
+.indent{
+  padding-left: 10%;
+}
+
+.subTitle{
+  color: white; 
+  font-size: 160%; 
+  text-decoration: underline white 3px; 
+}
+
+.menuBtn {
+  border-left: 3px solid;
+  border-color: #162550;  
+  background-color: #203575;
+  
+  cursor: pointer;
+  transition: background 0.5s ease-in-out;
+  width: 20%;
+  height: 5%;
+
+  border-radius: 15px;
+  
+  font-family: 'Oswald', sans-serif !important ;
+  letter-spacing: 1px;
+  text-align: middle;
+  font-size: 200%;
+  color: white;
+  border: none;
+
+}
+
+.menuBtn:hover {
+     background: #0071BC;
+}
+
+
+
+.btn {
+  border:3px solid;
+  border-color: #162550;      
+  background-color: #203575;
+  text-align: left;
+  font-size: 150%;
+  cursor: pointer;
+  color: black;
+  display: inline-block;
+  transition: background 0.5s ease-in-out;
+  height:90%;
+  width: 45%;
+  border-radius: 15px;
+  font-family: 'Oswald', sans-serif !important ;
+}
+
+.btn:hover {
+     background: #0071BC;
+}
+
+.table {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+.row {
+    display: table-row;
+    width: 100%;
+}
+.box {
+    display: table-cell;
+    width: 33%;
+    border-right: 4px solid ;
+    border-color: #333333; 
+    height: inherit;
+    width: 31%;
+    vertical-align: middle;
+    text-align: center;
+    color:white;
+    font-size: 250%;
+  text-decoration: underline white 3px; 
+}
+   
+input[type=submit] {
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  border:3px solid;
+  border-color: #162550;    
+  border-radius: 15px;
+  font-family: 'Oswald', sans-serif !important ;
+  font-size: 450%;
+  background-color: #203575;
+  margin-top: 0.5%;
+  margin-left: 15%;
+  display: block;
+  width: 70%;
+  height: 20%;
+  background-color: #203575;
+}
+
+input[type=submit]:hover {
+  background: #0071BC;
+}
+
+input[type="text"] {
+    width: 200px;
+}

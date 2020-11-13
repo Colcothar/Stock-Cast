@@ -1,0 +1,58 @@
+<html>
+
+<head>
+  <title>StockPredictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+  <div id="title">
+    <h1> Stock Predictor </h1>
+  </div>
+
+  <button style="margin-left: 20%; margin-right: 10%; background-color: darkblue;" class="menuBtn">Basic </button>
+  <button style="margin-left: 10%; " class="menuBtn">Advanced</button>
+
+
+  <div class="DataContainer">
+
+
+    <div class="table">
+      <div class="row">
+
+        <div class="box">
+          <form style="height:0%;" action="http://localhost:5000/uploader" method="POST" enctype="multipart/form-data"></form>  
+            
+            <label for="stocks">Choose a common stock:</label><br>
+            
+            <select style="width: 20%;" name="stocks" id="stocks">
+              <option value=""></option>
+              <option value="LLOY">LLOY</option>
+              <option value="MRO">MRO</option>
+              <option value="KGF">KGF</option>
+              <option value="VOD">VOD</option>
+            </select>
+        </div>
+
+        <div class="box">
+          Enter Stock ticker
+          <br>
+          <input type="text" value="AAPL" name="textBox">
+        </div>
+
+        <div style="border-right: 0px;" class="box">
+          Upload stock data
+          <br>
+          <input type="file" name="file" />
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <input class="DataContainer" value="GO" type="submit" />
+  </form>
+
+</body>
+
+</html>
