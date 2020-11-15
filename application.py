@@ -39,17 +39,19 @@ def advanced():
 def predictions():
    return render_template('predictions.html')
 
-@app.route('/uploader', methods = ['GET', 'POST'])
-def uploader():
-   if request.method == 'POST':
-        f = request.files['file']
+@app.route('/basicUploader', methods = ['GET', 'POST'])
+def basicUploader2():
+    
+    if request.method == 'POST':
+        
+        f = request.files['stockData']
         f.save('/var/www/html/FlaskStuff/data.csv')
       
-        textBox = request.form['textBox']
+        textBox = request.form['textBoxStock']
         print("Text box: " + textBox)
 
-        dropDown = request.form['stocks']
-        print(dropDown)
+        dropDown = request.form['dropDownStock']
+        print("Drop down: " + dropDown)
     
 
         with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
@@ -57,6 +59,25 @@ def uploader():
             
         return render_template('cool_form.html')
 
+@app.route('/advancedUploader', methods = ['GET', 'POST'])
+def advancedUploader2():
+    
+    if request.method == 'POST':
+        
+        f = request.files['stockData']
+        f.save('/var/www/html/FlaskStuff/data.csv')
+      
+        textBox = request.form['textBoxStock']
+        print("Text box: " + textBox)
+
+        dropDown = request.form['dropDownStock']
+        print("Drop down: " + dropDown)
+    
+
+        with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
+            f.write(str(textBox))
+            
+        return render_template('cool_form.html')
 
 
 @app.route('/results')

@@ -208,6 +208,17 @@ input[type="text"] {
   transition: opacity .2s;
 }
 
+form{
+  height: 0px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#form-wrapper{
+  vertical-align: top;
+  font-size: 0px;
+}
+
 .slider:hover {
   opacity: 1;
 }

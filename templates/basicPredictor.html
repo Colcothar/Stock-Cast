@@ -7,13 +7,13 @@
 
 <body>
   <div id="title">
-    <h1> Stock Predictor </h1>
+    <a href="/"><h1> Stock Predictor </h1></a>
   </div>
 
   <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; background-color: #201F58;" class="menuBtn">Basic </button>
   <button onclick="window.location.href='advanced';" style="margin-left: 10%; " class="menuBtn">Advanced</button>
 
-
+  
   <div style="font-size: 250%; text-decoration: underline white 3px; " class="DataContainer">
 
 
@@ -21,17 +21,19 @@
       <div class="row">
 
         <div class="box">
-          <form action="http://localhost:5000/uploader" method="POST" enctype="multipart/form-data"></form>
-
+          <div id="form-wrapper">
+          <form action="window.location.href='basicUploader" method="POST" enctype="multipart/form-data">
+            </div>
           <label for="stocks">Choose a common stock:</label><br>
 
-          <select style="width: 20%;" name="dropDownStock">
+          <select style="width: 20%;" name="dropDownStock" id="dropDownStock">
             <option value=""></option>
             <option value="LLOY">LLOY</option>
             <option value="MRO">MRO</option>
             <option value="KGF">KGF</option>
             <option value="VOD">VOD</option>
           </select>
+
         </div>
 
         <div class="box">
