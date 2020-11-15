@@ -26,11 +26,15 @@
 
                 <div class="box">
 
-                    <form action="http://localhost:5000/uploader" method="POST" enctype="multipart/form-data"></form>
+                    Set number of input batches
+              <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
 
-                        Upload training data
-                        <br>
-                        <input type="file" name="trainingData" required>
+              </div>
+              <div id="valueContainer">
+              <span id="value"></span>    
+              </div>
+          </div>
                 </div>
 
                 <div class="box">
