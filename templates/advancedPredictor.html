@@ -3,11 +3,14 @@
 <head>
     <title>StockPredictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
 </head>
 
 <body>
     <div id="title">
-        <a href="/"><h1> Stock Predictor </h1></a>
+        <a href="/">
+            <h1> Stock Predictor </h1>
+        </a>
     </div>
 
     <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; " class="menuBtn">Basic
@@ -25,35 +28,25 @@
 
                 <div class="box">
 
-                    Set number of input batches
-              <div class="slidecontainer">
-                <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                    <div id="form-wrapper">
+                        <form action="/advancedUploader" method="POST" enctype="multipart/form-data">
+                    </div>
 
-              </div>
-              <div id="valueContainer">
-              <span id="value"></span>    
-              </div>
-          </div>
+                    Enter title
+                    <br>
+                    <input type="text" value="" name="title">
+
                 </div>
 
                 <div class="box">
-                    <label for="stocks">Set number of input batches:</label><br>
-                    <select style="width: 20%;" name="nInputBatches" >
-                        <option value="">
-                        </option>
-                        <option value="1">1
-                        </option> 
-                        <option value="2">2
-                        </option>
-                        <option value="3">3
-                        </option>
-                        <option value="4">4
-                        </option>
-                    </select>
+                    Set number of input batches
+                    <div class="slidecontainer">
+                        <input type="range" min="1" max="100" value="50" class="slider" name="inputBatches" id="myRange">
+                    </div>
+                    <div id="valueContainer">
+                        <span id="value"> value: </span>
+                    </div>
                 </div>
-                
-           
-                
 
                 <div style="border-right: 0px;" class="box">
                     <label for="stocks">Layer activiation functions</label><br>
@@ -85,15 +78,16 @@
             <div class="threeRow">
                 <div class="box">
 
-                        Upload prediction data
-                        <br>
-                        <input type="file" name="predictionData" required>
+
+                    Upload training data
+                    <br>
+                    <input type="file" name="trainingData" required/>
 
 
                 </div>
                 <div class="box">
                     <label for="stocks">Set number of output batches:</label><br>
-                    <select style="width: 20%;" name="stocks">
+                    <select style="width: 20%;" name="outputBatches">
 
                         <option value="1">1
                         </option>
@@ -110,6 +104,7 @@
                     </select>
                 </div>
 
+                
                 <div style="border-right: 0px;" class="box">
                     <label for="stocks">Loss function:</label><br>
                     <select style="width: 20%;" name="lossFunction">
@@ -123,15 +118,22 @@
                         </option>
                     </select>
                 </div>
+                
             </div>
 
             <div class="threeRow">
 
                 <div class="box">
+                    
+                    Upload prediction data
+                    <br>
+                    <input type="file" name="predictionData" />
+
 
                 </div>
 
 
+                
                 <div class="box">
                     Enter number of epochs
                     <br>
@@ -139,9 +141,10 @@
                 </div>
 
                 <div style="border-right: 0px;" class="box">
-                    <label for="stocks">Stacked Layers:</label><br>
-                    <select style="width: 20%;" name="stackedLayers" id="stocks">
-                        <option value="Yes" selected>Yes
+                    <label for="stocks">Stacked Layers</label><br>
+                    <select style="width: 20%;" name="stackedLayers">
+
+                        <option value="Yes">Yes
                         </option>
                         <option value="No">No
                         </option>
@@ -153,7 +156,7 @@
     <br>
     <input class="DataContainer" value="GO" type="submit" />
     </form>
-
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 
 </html>

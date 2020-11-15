@@ -44,18 +44,18 @@ def basicUploader2():
     
     if request.method == 'POST':
         
-        f = request.files['stockData']
-        f.save('/var/www/html/FlaskStuff/data.csv')
+        stockData = request.files['stockData']
+        stockData.save('/var/www/html/FlaskStuff/data.csv')
       
-        textBox = request.form['textBoxStock']
-        print("Text box: " + textBox)
+        textBoxStock = request.form['textBoxStock']
+        print("Text box: " + textBoxStock)
 
-        dropDown = request.form['dropDownStock']
-        print("Drop down: " + dropDown)
+        dropDownStock = request.form['dropDownStock']
+        print("Drop down: " + dropDownStock)
     
 
         with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
-            f.write(str(textBox))
+            f.write(str(textBoxStock))
             
         return render_template('cool_form.html')
 
@@ -64,18 +64,36 @@ def advancedUploader2():
     
     if request.method == 'POST':
         
-        f = request.files['stockData']
-        f.save('/var/www/html/FlaskStuff/data.csv')
+        title = request.form['title']
+        print("Title: " + title)
+
+        inputBatches = request.form['inputBatches']
+        print("inputBatches: " + inputBatches)
+
+        activationFunction = request.form['activationFunction']
+        print("activationFunction: " + activationFunction)
+
+
+        trainingData = request.files['trainingData']
+        trainingData.save('/var/www/html/StockPredictor/trainingData.csv')
       
-        textBox = request.form['textBoxStock']
-        print("Text box: " + textBox)
+        outputBatches = request.form['outputBatches']
+        print("outputBatches: " + outputBatches) 
+        
+        lossFunction = request.form['lossFunction']
+        print("lossFunction: " + lossFunction)
+ 
 
-        dropDown = request.form['dropDownStock']
-        print("Drop down: " + dropDown)
-    
+        predictionData = request.files['predictionData']
+        predictionData.save('/var/www/html/StockPredictor/predictionData.csv')
 
-        with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
-            f.write(str(textBox))
+        epochs = request.form['epochs']
+        print("epochs: " + epochs)
+
+        stackedLayers = request.form['stackedLayers']
+        print("stackedLayers: " + stackedLayers)
+
+        
             
         return render_template('cool_form.html')
 
