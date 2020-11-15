@@ -107,7 +107,6 @@ h2{
   width: 45%;
   border-radius: 15px;
   font-family: 'Oswald', sans-serif !important ;
-  color:black;
 }
 
 .btn:hover {
@@ -166,7 +165,6 @@ input[type=submit] {
 
 input[type=submit]:hover {
   background: #0071BC;
-  
 }
 
 input[type="text"] {
@@ -181,21 +179,62 @@ input[type="text"] {
  
   cursor: pointer;
   transition: background 0.5s ease-in-out;
-  width: 20%;
+  width: 15%;
   height: 10%;
   border-radius: 15px;
   font-family: 'Oswald', sans-serif !important ;
   letter-spacing: 1px;
-  vertical-align: middle;
-  text-align: center;
-  font-size: 100%;
+  text-align: middle;
+  font-size: 120%;
   color: white;
   border: none;
 }
 
-form{
-  height: 0px;
-  width: 0px;
-  margin: 0 auto;
-  position: relative;
+.slidecontainer {
+  margin-left: 10%;
+  width: 60%;
+  float: left;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+#valueContainer{
+  margin-left: 76%;
+  padding: 0 auto;
+
+  text-align: left;
+
+}
+
+#value{
+  font-size: 60%;
 }
