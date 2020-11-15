@@ -57,7 +57,9 @@ def basicUploader2():
         with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
             f.write(str(textBoxStock))
             
-        return render_template('cool_form.html')
+        link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
+        link = "https://bbc.co.uk"
+        return render_template('cool_form.html', stock=str(dropDownStock), link=link)
 
 @app.route('/advancedUploader', methods = ['GET', 'POST'])
 def advancedUploader2():
