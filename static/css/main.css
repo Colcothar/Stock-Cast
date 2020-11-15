@@ -101,6 +101,7 @@ h2{
   text-align: left;
   font-size: 150%;
   cursor: pointer;
+  color: black;
   display: inline-block;
   transition: background 0.5s ease-in-out;
   height:90%;
