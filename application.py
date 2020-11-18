@@ -5,6 +5,9 @@ from random import random
 from time import sleep
 from threading import Thread, Event
 import os
+import requests
+
+
 
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
@@ -37,7 +40,8 @@ def advanced():
 
 @app.route('/predictions')
 def predictions():
-   return render_template('predictions.html')
+   location = "/static/img/cost.png"
+   return render_template('predictions.html', address=location)
 
 @app.route('/basicUploader', methods = ['GET', 'POST'])
 def basicUploader2():
@@ -45,18 +49,52 @@ def basicUploader2():
     if request.method == 'POST':
         
         stockData = request.files['stockData']
-        stockData.save('/var/www/html/FlaskStuff/data.csv')
+        stockData.save('/var/www/html/StockPredictor/basic/PastStockData.csv')
       
         textBoxStock = request.form['textBoxStock']
         print("Text box: " + textBoxStock)
 
         dropDownStock = request.form['dropDownStock']
         print("Drop down: " + dropDownStock)
-    
+ 
+        with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f:
+            firstLine = f.readline()
 
-        with open('/var/www/html/FlaskStuff/nopol.txt', 'w') as f:
-            f.write(str(textBoxStock))
-            
+        stock="null"
+
+        if(firstLine==""):
+            if(dropDownStock==""):
+                if(textBoxStock==""):
+                    print("No data")
+                    error= "No data"
+                else:
+                    stock=textBoxStock
+            else:
+                stock=dropDownStock
+
+        if(stock!="null"):
+            url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock
+      
+            r = requests.get(url)
+
+            with open('/var/www/html/StockPredictor/basic/DownloadedPastStockData.csv', 'wb') as f:
+                f.write(r.content) 
+
+            with open("/var/www/html/StockPredictor/basic/PastStockData.csv") as csvfile:
+                rawData=[]
+                readCSV = csv.reader(csvfile, delimiter=',')
+                i=0
+                for row in readCSV:
+                i = i +1
+                if i>15:
+                    rawData.append(float(row[2].replace(",", "")))
+
+        
+        
+    
+        
+
+
         link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
         link = "https://bbc.co.uk"
         return render_template('cool_form.html', stock=str(dropDownStock), link=link)
@@ -77,7 +115,7 @@ def advancedUploader2():
 
 
         trainingData = request.files['trainingData']
-        trainingData.save('/var/www/html/StockPredictor/trainingData.csv')
+        trainingData.save('/var/www/html/StockPredictor/advanced/TrainingStockData.csv')
       
         outputBatches = request.form['outputBatches']
         print("outputBatches: " + outputBatches) 
@@ -87,7 +125,7 @@ def advancedUploader2():
  
 
         predictionData = request.files['predictionData']
-        predictionData.save('/var/www/html/StockPredictor/predictionData.csv')
+        predictionData.save('/var/www/html/StockPredictor/advanced/PredictionData.csv')
 
         epochs = request.form['epochs']
         print("epochs: " + epochs)
@@ -95,7 +133,14 @@ def advancedUploader2():
         stackedLayers = request.form['stackedLayers']
         print("stackedLayers: " + stackedLayers)
 
-        
+        with open('/var/www/html/StockPredictor/advanced/Parameters.txt', 'w') as f:
+            f.write(str(title)+"\n")
+            f.write(str(inputBatches)+"\n")
+            f.write(str(activationFunction)+"\n")
+            f.write(str(outputBatches)+"\n")
+            f.write(str(lossFunction)+"\n")
+            f.write(str(epochs)+"\n")
+            f.write(str(stackedLayers))
             
         return render_template('cool_form.html')
 
