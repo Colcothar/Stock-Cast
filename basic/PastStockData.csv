@@ -1,42 +1,13 @@
-MacroTrends Data Download,,,,,
-MRO - Historical Price and Volume Data,,,,,
-Note: Historical prices are adjusted for stock splits.,,,,,
-,,,,,
-"Disclaimer and Terms of Use: Historical stock data is provided 'as is' and solely for informational purposes, not for trading purposes or advice.",,,,,
-"MacroTrends LLC expressly disclaims the accuracy, adequacy, or completeness of any data and shall not be liable for any errors, omissions or other defects in, ",,,,,
-"delays or interruptions in such data, or for any actions taken in reliance thereon.  Neither MacroTrends LLC nor any of our information providers will be liable",,,,,
-for any damages relating to your use of the data provided.,,,,,
-,,,,,
-,,,,,
-"ATTRIBUTION: Proper attribution requires clear indication of the data source as ""www.macrotrends.net"".",,,,,
-"A ""dofollow"" backlink to the originating page is also required if the data is displayed on a web page.",,,,,
-,,,,,
-,,,,,
-date,open,high,low,close,volume
-1970-01-02,3.3716,3.446,3.3716,3.446,70700
-1970-01-05,3.446,3.4708,3.446,3.4708,90800
-1970-01-06,3.4708,3.4708,3.3964,3.4083,106600
-1970-01-07,3.4083,3.4579,3.3835,3.446,79700
-1970-01-08,3.4579,3.57,3.4579,3.57,303100
-1970-01-09,3.57,3.6324,3.4708,3.5075,769400
-1970-01-12,3.5075,3.5075,3.4341,3.446,77700
-1970-01-13,3.446,3.4579,3.4212,3.446,66300
-1970-01-14,3.446,3.446,3.3964,3.4083,38500
-1970-01-15,3.4083,3.4212,3.3835,3.3964,46900
-1970-01-16,3.3964,3.4212,3.3835,3.3835,52900
-1970-01-19,3.3835,3.446,3.3835,3.4083,63000
-1970-01-20,3.4083,3.4083,3.3716,3.3716,57600
-1970-01-21,3.3716,3.3835,3.3468,3.3716,110600
-1970-01-22,3.3716,3.3964,3.3468,3.3597,59600
-1970-01-23,3.3597,3.3964,3.3339,3.3468,51200
-1970-01-26,3.3468,3.3468,3.2477,3.2606,268200
-1970-01-27,3.2606,3.2606,3.2229,3.2229,207200
-1970-01-28,3.2606,3.3101,3.2606,3.2844,91500
-1970-01-29,3.2844,3.2973,3.2348,3.2348,114600
-1970-01-30,3.2606,3.2973,3.2606,3.2973,92800
-1970-02-02,3.2973,3.322,3.2606,3.2606,99900
-1970-02-03,3.2606,3.3716,3.2348,3.3468,100500
-1970-02-04,3.3468,3.446,3.3339,3.3597,81400
-1970-02-05,3.3597,3.3716,3.2844,3.2844,93500
-1970-02-06,3.2844,3.3597,3.2844,3.3339,74700
-1970-02-09,3.3468,3.3964,3.3468,3.3597,111900
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+110
+120
+130

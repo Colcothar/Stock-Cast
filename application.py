@@ -6,6 +6,7 @@ from time import sleep
 from threading import Thread, Event
 import os
 import requests
+import csv
 
 
 
@@ -71,13 +72,18 @@ def basicUploader2():
                     stock=textBoxStock
             else:
                 stock=dropDownStock
+        else:
+            with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f:
+                rawData= f.read()
+
+
 
         if(stock!="null"):
             url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock
       
             r = requests.get(url)
 
-            with open('/var/www/html/StockPredictor/basic/DownloadedPastStockData.csv', 'wb') as f:
+            with open('/var/www/html/StockPredictor/basic/PastStockData.csv', 'wb') as f:
                 f.write(r.content) 
 
             with open("/var/www/html/StockPredictor/basic/PastStockData.csv") as csvfile:
@@ -85,9 +91,11 @@ def basicUploader2():
                 readCSV = csv.reader(csvfile, delimiter=',')
                 i=0
                 for row in readCSV:
-                i = i +1
-                if i>15:
-                    rawData.append(float(row[2].replace(",", "")))
+                    i = i +1
+                    if i>15:
+                        rawData.append(float(row[2].replace(",", "")))
+
+        print(rawData)
 
         
         
