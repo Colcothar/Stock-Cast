@@ -1,7 +1,7 @@
-Test
-63
+
+50
 relu
-3
+1
 mse
 100
 Yes

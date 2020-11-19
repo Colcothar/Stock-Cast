@@ -27,15 +27,15 @@ thread = Thread()
 thread_stop_event = Event()
 
 
-@app.route('/')
+@app.route('/') #displays home page
 def main():
     return render_template('index.html')
 
-@app.route('/basic')
+@app.route('/basic') #displays basic page
 def basic():
    return render_template('basicPredictor.html')
 
-@app.route('/advanced')
+@app.route('/advanced') #displays advanced page
 def advanced():
    return render_template('advancedPredictor.html')
 
@@ -44,18 +44,20 @@ def predictions():
    location = "/static/img/cost.png"
    return render_template('predictions.html', address=location)
 
-@app.route('/basicUploader', methods = ['GET', 'POST'])
+@app.route('/basicUploader', methods = ['GET', 'POST']) #function to process the entered data to the basic page
 def basicUploader2():
     
     if request.method == 'POST':
-        
-        stockData = request.files['stockData']
+
+        processedData=[] # create blank array to hold the final stock data
+
+        stockData = request.files['stockData'] #saves the uploaded file to PastStockData.csv
         stockData.save('/var/www/html/StockPredictor/basic/PastStockData.csv')
       
-        textBoxStock = request.form['textBoxStock']
+        textBoxStock = request.form['textBoxStock'] #saves the stock entered into the textbox into variable
         print("Text box: " + textBoxStock)
 
-        dropDownStock = request.form['dropDownStock']
+        dropDownStock = request.form['dropDownStock']# saves stock picked from dropdownbox into variable
         print("Drop down: " + dropDownStock)
  
         with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f:
@@ -63,45 +65,46 @@ def basicUploader2():
 
         stock="null"
 
+        
+
         if(firstLine==""):
-            if(dropDownStock==""):
-                if(textBoxStock==""):
+            if(textBoxStock==""):
+                if(dropDownStock==""):
                     print("No data")
+                    location=3
                     error= "No data"
                 else:
+                    location=2
                     stock=textBoxStock
             else:
+                location=1
                 stock=dropDownStock
         else:
-            with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f:
-                rawData= f.read()
+            location=0
+            with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f: # open 
+                processedData= f.read()
 
 
 
-        if(stock!="null"):
-            url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock
+        if(location==0): #if the user has only uploaded a text file
+            url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock # generate url of stock data
       
-            r = requests.get(url)
+            r = requests.get(url) # generate request
 
             with open('/var/www/html/StockPredictor/basic/PastStockData.csv', 'wb') as f:
-                f.write(r.content) 
+                f.write(r.content) # write content to textfile
 
             with open("/var/www/html/StockPredictor/basic/PastStockData.csv") as csvfile:
-                rawData=[]
+                
                 readCSV = csv.reader(csvfile, delimiter=',')
                 i=0
                 for row in readCSV:
                     i = i +1
-                    if i>15:
-                        rawData.append(float(row[2].replace(",", "")))
+                    if i>15: # the first 15 rows are text about macrotrends, not stock data. So I want to ignore the first 15 rows.
+                        processedData.append(float(row[2].replace(",", ""))) #adds each row to array removing the commer
 
-        print(rawData)
-
-        
-        
-    
-        
-
+            #generate graph
+        print(processedData)
 
         link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
         link = "https://bbc.co.uk"
