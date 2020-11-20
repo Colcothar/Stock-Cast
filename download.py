@@ -1,13 +1,16 @@
-import requests
-stock = input("Enter stock")
-    
-url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock
-      
-r = requests.get(url)
+import yfinance as yf
 
-with open('/var/www/html/StockPredictor/basic/DownloadedPastStockData.csv', 'wb') as f:
-      f.write(r.content) 
-      print(r.content)
+data=[]
+
+stock="MSFT"
+
+msft = yf.Ticker(str(stock))
+
+hist = msft.history(period="max")
 
 
-      
+
+for i in range(len(hist)):
+      data.append(hist["High"][i])
+
+print(data)
