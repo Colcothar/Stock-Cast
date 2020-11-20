@@ -26,6 +26,13 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 thread = Thread()
 thread_stop_event = Event()
 
+def validateCSVData(processedData):
+    valid = True
+    for i in processedData:
+        if( processedData[i].is_integer() != False):
+            valid=False
+    return valid
+    
 
 @app.route('/') #displays home page
 def main():
@@ -83,6 +90,9 @@ def basicUploader2():
             location=0
             with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f: # open 
                 processedData= f.read()
+                if (validateCSVData(processedData)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+                    return render_template('error.html') # return an error if there are not ints
+                    
 
 
 
