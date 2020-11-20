@@ -136,7 +136,7 @@ def advancedUploader2():
 
 
         trainingData = request.files['trainingData']
-        trainingData.save('/var/www/html/StockPredictor/advanced/TrainingStockData.csv')
+        trainingData.save('/var/www/html/StockPredictor/advanced/TrainingData.csv')
       
         outputBatches = request.form['outputBatches']
         print("outputBatches: " + outputBatches) 
