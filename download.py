@@ -1,4 +1,5 @@
 import yfinance as yf
+import lxml
 
 data=[]
 
@@ -8,9 +9,16 @@ msft = yf.Ticker(str(stock))
 
 hist = msft.history(period="max")
 
+print(msft.info['longName'])
+
+txt = msft.info['longBusinessSummary']
 
 
-for i in range(len(hist)):
-      data.append(hist["High"][i])
 
-print(data)
+x = txt.split(". ")
+
+print(x[0]) 
+
+data = (hist["High"])
+
+print(data[1])

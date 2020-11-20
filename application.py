@@ -7,8 +7,10 @@ from threading import Thread, Event
 import os
 import requests
 import csv
+import yfinance as yf
 
-
+global basicMinData
+basicMinData=10
 
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
@@ -31,8 +33,20 @@ def validateCSVData(processedData):
     for i in processedData:
         if( processedData[i].is_integer() != False):
             valid=False
+    if(len(processedData)<basicMinData):
+        valid=False
     return valid
     
+def downloadStockData(stockTicker):
+   
+    data=[] #create blank array to hold data
+    stock = yf.Ticker(str(stockTicker)) #creates request
+
+    history = stock.history(period="max") #gets history
+
+    for i in range(len(history)):
+        data.append(history["High"][i]) #writes the max stock price of the day to the array
+    return(data) #return array
 
 @app.route('/') #displays home page
 def main():
@@ -72,7 +86,6 @@ def basicUploader2():
 
         stock="null"
 
-        
 
         if(firstLine==""):
             if(textBoxStock==""):
@@ -82,36 +95,30 @@ def basicUploader2():
                     error= "No data"
                 else:
                     location=2
-                    stock=textBoxStock
+                    stockTicker=dropDownStock
             else:
                 location=1
-                stock=dropDownStock
+                stockTicker=textBoxStock
         else:
             location=0
             with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f: # open 
                 processedData= f.read()
+
                 if (validateCSVData(processedData)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-                    return render_template('error.html') # return an error if there are not ints
+                    return render_template('error.html') # return an error if there are not ints OR not enough data
                     
 
 
+        if(location!=0): #if the user has only provided a ticker
+            processedData= downloadStockData(stockTicker)
+            if (len(processedData)==0):
+                return render_template('error.html', message="Stock doesn't exist") # stock doesnt exist
+            elif(len(processedData)<basicMinData):
+                return render_template('error.html', message="Not enough data") # return if not enough data 
 
-        if(location==0): #if the user has only uploaded a text file
-            url = "http://download.macrotrends.net/assets/php/stock_data_export.php?t=" + stock # generate url of stock data
-      
-            r = requests.get(url) # generate request
 
-            with open('/var/www/html/StockPredictor/basic/PastStockData.csv', 'wb') as f:
-                f.write(r.content) # write content to textfile
 
-            with open("/var/www/html/StockPredictor/basic/PastStockData.csv") as csvfile:
-                
-                readCSV = csv.reader(csvfile, delimiter=',')
-                i=0
-                for row in readCSV:
-                    i = i +1
-                    if i>15: # the first 15 rows are text about macrotrends, not stock data. So I want to ignore the first 15 rows.
-                        processedData.append(float(row[2].replace(",", ""))) #adds each row to array removing the commer
+
 
             #generate graph
         print(processedData)
