@@ -9,8 +9,7 @@ import requests
 import csv
 import yfinance as yf
 
-global basicMinData
-basicMinData=10
+
 
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
@@ -28,25 +27,41 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 thread = Thread()
 thread_stop_event = Event()
 
-def validateCSVData(processedData):
+def validateCSVData(processedData,minDataTrue, minData):
     valid = True
     for i in processedData:
-        if( processedData[i].is_integer() != False):
+        try: # try converting to int
+            int(i)
+        except:
+            print(i)
+            valid = False
+
+    if(minDataTrue==True):
+        if(len(processedData)<minData):
             valid=False
-    if(len(processedData)<basicMinData):
-        valid=False
+
     return valid
-    
+
+
+
+def loadCSV(location, column ):
+    rawData=[]
+
+    with open(location) as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            rawData.append(row[column].replace(",", "")) #often data sets use commas to make the data more presentable. Eg 10000 becomes 10,000. This undoes this
+    return rawData
+
 def downloadStockData(stockTicker):
-   
-    data=[] #create blank array to hold data
+    rawData=[]
     stock = yf.Ticker(str(stockTicker)) #creates request
 
     history = stock.history(period="max") #gets history
 
     for i in range(len(history)):
-        data.append(history["High"][i]) #writes the max stock price of the day to the array
-    return(data) #return array
+        rawData.append(history["High"][i]) #writes the max stock price of the day to the array
+    return(rawData) #return array
 
 @app.route('/') #displays home page
 def main():
@@ -101,11 +116,10 @@ def basicUploader2():
                 stockTicker=textBoxStock
         else:
             location=0
-            with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f: # open 
-                processedData= f.read()
+            processedData=loadCSV('/var/www/html/StockPredictor/basic/PastStockData.csv',0)
 
-                if (validateCSVData(processedData)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-                    return render_template('error.html') # return an error if there are not ints OR not enough data
+            if (validateCSVData(processedData, True, 1)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+                return render_template('error.html') # return an error if there are not ints OR not enough data
                     
 
 
@@ -113,7 +127,7 @@ def basicUploader2():
             processedData= downloadStockData(stockTicker)
             if (len(processedData)==0):
                 return render_template('error.html', message="Stock doesn't exist") # stock doesnt exist
-            elif(len(processedData)<basicMinData):
+            elif(len(processedData)<1):
                 return render_template('error.html', message="Not enough data") # return if not enough data 
 
 
@@ -121,7 +135,7 @@ def basicUploader2():
 
 
             #generate graph
-        print(processedData)
+        #print(processedData)
 
         link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
         link = "https://bbc.co.uk"
@@ -131,7 +145,9 @@ def basicUploader2():
 def advancedUploader2():
     
     if request.method == 'POST':
-        
+        predictionDataSRC = '/var/www/html/StockPredictor/advanced/PredictionData.csv'
+        trainingDataSRC = '/var/www/html/StockPredictor/advanced/TrainingData.csv'
+
         title = request.form['title']
         print("Title: " + title)
 
@@ -143,7 +159,7 @@ def advancedUploader2():
 
 
         trainingData = request.files['trainingData']
-        trainingData.save('/var/www/html/StockPredictor/advanced/TrainingData.csv')
+        trainingData.save(trainingDataSRC)
       
         outputBatches = request.form['outputBatches']
         print("outputBatches: " + outputBatches) 
@@ -153,7 +169,7 @@ def advancedUploader2():
  
 
         predictionData = request.files['predictionData']
-        predictionData.save('/var/www/html/StockPredictor/advanced/PredictionData.csv')
+        predictionData.save(predictionDataSRC)
 
         epochs = request.form['epochs']
         print("epochs: " + epochs)
@@ -169,7 +185,19 @@ def advancedUploader2():
             f.write(str(lossFunction)+"\n")
             f.write(str(epochs)+"\n")
             f.write(str(stackedLayers))
-            
+
+        predictionData=loadCSV(predictionDataSRC, 0) #load prediction data
+        #predictionDataLength = len(predictionData) #number of elements in predictiond data
+        if (validateCSVData(predictionData, True, (inputBatches+outputBatches))==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            return render_template('error.html') # return an error if there are not ints
+
+        trainingData=loadCSV(trainingDataSRC, 0)
+        #trainingDataLength = len(predictionData)
+        if (validateCSVData(trainingData, True, inputBatches)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            return render_template('error.html') # return an error if there are not ints 
+
+
+
         return render_template('cool_form.html')
 
 
