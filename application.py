@@ -43,6 +43,23 @@ def validateCSVData(processedData,minDataTrue, minData):
     return valid
 
 
+def getInfo():
+       data=[]
+
+    stock="msft"    
+
+    msft = yf.Ticker(str(stock))
+
+    hist = msft.history(period="max")
+
+    print(msft.info['longName'])
+
+    txt = msft.info['longBusinessSummary']
+    x = txt.split(". ")
+    print(x[0]) 
+    data = (hist["High"])
+    print(data[1])
+
 
 def loadCSV(location, column ):
     rawData=[]
@@ -108,6 +125,7 @@ def basicUploader2():
                     print("No data")
                     location=3
                     error= "No data"
+                    return render_template("error.html")
                 else:
                     location=2
                     stockTicker=dropDownStock
@@ -123,7 +141,7 @@ def basicUploader2():
                     
 
 
-        if(location!=0): #if the user has only provided a ticker
+        if(location!=0 ): #if the user has only provided a ticker
             processedData= downloadStockData(stockTicker)
             if (len(processedData)==0):
                 return render_template('error.html', message="Stock doesn't exist") # stock doesnt exist
