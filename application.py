@@ -44,7 +44,7 @@ def validateCSVData(processedData,minDataTrue, minData):
 
 
 def getInfo():
-       data=[]
+    data=[]
 
     stock="msft"    
 
