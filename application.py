@@ -23,10 +23,11 @@ app.config['DEBUG'] = True
 #turn the flask app into a socketio app
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
-#random number Generator Thread
+#this starts the stopwatch thread. This starts a timer so the user knows how long the model has been training for.
 thread = Thread()
 thread_stop_event = Event()
 
+#fynction that checks there is an int on every line
 def validateCSVData(processedData,minDataTrue, minData):
     valid = True
     for i in processedData:
@@ -42,26 +43,22 @@ def validateCSVData(processedData,minDataTrue, minData):
 
     return valid
 
-
-def getInfo():
-    data=[]
-
-    stock="msft"    
+#function to get information about the stock
+def getStockInfo(stock):
 
     msft = yf.Ticker(str(stock))
 
-    hist = msft.history(period="max")
 
-    print(msft.info['longName'])
+    print(msft.info['longName']) #get full name 
 
-    txt = msft.info['longBusinessSummary']
-    x = txt.split(". ")
-    print(x[0]) 
+    txt = msft.info['longBusinessSummary'] #get the summary about the company
+    x = txt.split(". ") #split the summary into sentences 
+    print(x[0]) #get first sentence
     data = (hist["High"])
     print(data[1])
 
 
-def loadCSV(location, column ):
+def loadCSV(location, column ): #load CSV data into array
     rawData=[]
 
     with open(location) as csvfile:
@@ -70,7 +67,7 @@ def loadCSV(location, column ):
             rawData.append(row[column].replace(",", "")) #often data sets use commas to make the data more presentable. Eg 10000 becomes 10,000. This undoes this
     return rawData
 
-def downloadStockData(stockTicker):
+def getStockData(stockTicker):
     rawData=[]
     stock = yf.Ticker(str(stockTicker)) #creates request
 
@@ -141,8 +138,8 @@ def basicUploader2():
                     
 
 
-        if(location!=0 ): #if the user has only provided a ticker
-            processedData= downloadStockData(stockTicker)
+        if(location!=0 and location!=3 ): #if the user has only provided a ticker
+            processedData= getStockData(stockTicker)
             if (len(processedData)==0):
                 return render_template('error.html', message="Stock doesn't exist") # stock doesnt exist
             elif(len(processedData)<1):
