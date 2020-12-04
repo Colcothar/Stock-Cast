@@ -1,43 +1,55 @@
 
-
 <html>
-  
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  <title>StockPredictor </title>
-</head> 
-
-
- 
-<img src="/static/img/cost.png"> 
-
-
-<img src="{{address}}"> 
-
- <body> 
-   <div id="title">
-     <h1> Stock Predictor </h1>
-   </div>
-   
-
-       <div style="height: 70%;" class="DataContainer">
-         <h2> Stock Name</h2>
-        
-         <img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
-         <img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
-         <br>
-         <button style="margin-left: 5%; margin-right: 2%; "class="downloadBtn"> <i class="fa fa-download"></i> Download image
-    </button>
-    
-    <button  class="downloadBtn"> <i class="fa fa-download"></i> Download as csv
-    </button>
-         
-         </div>
-         
-   </div>
-   
-  </body>
-  
-  </html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+				<title>StockPredictor </title>
+			</head>
+			<img src="/static/img/cost.png">
+				<img src="{{address}}">
+					<body>
+						<div id="title">
+							<h1> Stock Predictor </h1>
+						</div>
+						
+						<div style="height: 70%;" class="DataContainer">
+							<h2> Stock Name</h2>
+							<div style="overflow: hidden; height: 80% !important;" class="table">
+							    
+								<div class="twoRow">
+									<div id="predictionBox" class="box">
+										<img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
+									</div>
+									
+									<div id="predictionBox" class="box">
+										<img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
+									</div>
+												
+									<div id="predictionBox" style="text-align: left;  vertical-align: top; padding-top: 2%;" class="box">
+                                         text
+                                    </div>
+                                </div>
+                                
+								<div style="height: 5%" class="twoRow">
+									<div id="predictionBox" class="box">
+									    <button style=""class="downloadBtn">
+									    <i class="fa fa-download"></i> Download image
+									    </button>
+								    </div>
+								
+								    <div id="predictionBox" class="box">
+									    <button  class="downloadBtn">
+									    <i class="fa fa-download"></i> Download as csv
+                                        </button>
+								    </div>
+								
+								    <div id="predictionBox" class="box">
+								    
+								    </div>
+								
+								</div>
+							</div>
+						</div>
+												</body>
+											</html>
   
