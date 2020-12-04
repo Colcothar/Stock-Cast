@@ -1,1 +1,27 @@
-{{message}}
+<html>
+
+<head>
+  <title>StockPredictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+  <div id="title">
+    <h1> Stock Predictor </h1>
+  </div>
+
+  <button style="margin-left: 20%; margin-right: 10%; background-color: #201F58;" class="menuBtn">Basic </button>
+  <button style="margin-left: 10%; " class="menuBtn">Advanced</button>
+
+
+  <div style="height: 17%;" class="DataContainer">
+    <div class="subTitle" >
+      <p style="padding-left: 1%; ">Data Error</p></div>
+</div>
+   
+  <div style="margin-top:1%;"class="DataContainer"  >
+    <p> {{message}}</piv>
+  </div>
+
+
+</body>
