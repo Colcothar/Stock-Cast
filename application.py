@@ -27,21 +27,31 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 thread = Thread()
 thread_stop_event = Event()
 
-#fynction that checks there is an int on every line
+#fynction that checks the csv has valid data
 def validateCSVData(processedData,minDataTrue, minData):
-    valid = True
+    '''
+    returns 1 for not integers
+    returns 2 for not enough data 
+    
+   '''
+
+    valid = 0
+    error=""
+    
     for i in processedData:
         try: # try converting to int
             int(i)
         except:
             print(i)
-            valid = False
+            valid = 1
+            error= "Data contains non integers"
 
     if(minDataTrue==True):
         if(len(processedData)<minData):
-            valid=False
+            valid=2
+            error = "Not enough data"
 
-    return valid
+    return error, valid
 
 #function to get information about the stock
 def getStockInfo(stock):
@@ -120,36 +130,37 @@ def basicUploader2():
             if(textBoxStock==""):
                 if(dropDownStock==""):
                     print("No data")
-                    location=3
+                    location=3 #no data
                     error= "No data"
                     return render_template("error.html")
                 else:
                     location=2
-                    stockTicker=dropDownStock
+                    stockTicker=dropDownStock #user has selected a stock from the drop down box
             else:
                 location=1
-                stockTicker=textBoxStock
+                stockTicker=textBoxStock #user has entered a ticker into the text box
         else:
-            location=0
+            location=0 #user has uploaded a csv
             processedData=loadCSV('/var/www/html/StockPredictor/basic/PastStockData.csv',0)
 
-            if (validateCSVData(processedData, True, 1)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-                return render_template('error.html') # return an error if there are not ints OR not enough data
+            
                     
 
 
         if(location!=0 and location!=3 ): #if the user has only provided a ticker
-            processedData= getStockData(stockTicker)
-            if (len(processedData)==0):
-                return render_template('error.html', message="Stock doesn't exist") # stock doesnt exist
-            elif(len(processedData)<1):
-                return render_template('error.html', message="Not enough data") # return if not enough data 
-
-
-
-
-
-            #generate graph
+            
+            processedData= getStockData(stockTicker) 
+            
+            valid, error = validateCSVData(processedData, True, 1)
+            
+            if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+                return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
+            
+         '''
+         generate predictions
+        generate graph
+        
+        '''
         #print(processedData)
 
         link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
