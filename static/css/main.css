@@ -21,7 +21,7 @@ html, body {
 
 
 .DataContainer{
-  position: relative;
+  
   border:3px solid;
   border-color: #162550;    
   border-radius: 15px;
@@ -29,7 +29,7 @@ html, body {
   background-color: #203575;
   margin-top:2%;
   margin-left: 15%;
-  display: block;
+  
   width: 70%;
   height: 40%;
   background-color: #203575;
@@ -58,9 +58,14 @@ h2{
 }
 
 .subTitle{
-  color: white; 
-  font-size: 160%; 
-  text-decoration: underline white 3px; 
+  height: 100%;
+  width: 100%;
+  vertical-align: middle;
+  letter-spacing: 1px;
+  text-align: left;
+  font-size: 200%;
+  color: white;
+   
 }
 
 .menuBtn {
@@ -242,10 +247,11 @@ form{
 #valueContainer{
   margin-left: 76%;
   padding: 0 auto;
-
   text-align: left;
 
 }
+
+
 
 #value{
   font-size: 60%;
