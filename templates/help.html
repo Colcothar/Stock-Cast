@@ -1,0 +1,43 @@
+<html>
+
+<head>
+  <title>StockPredictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+  <div id="title">
+    <h1> Stock Predictor </h1>
+  </div>
+
+  <button style="margin-left: 20%; margin-right: 10%; background-color: #201F58;" class="menuBtn">Basic </button>
+  <button style="margin-left: 10%; " class="menuBtn">Advanced</button>
+
+
+  <div style="height: 17%;" class="DataContainer">
+    <div class="subTitle" >
+      <p style="padding-left: 2%; ">Help</p></div>
+</div>
+   
+  <div style="margin-top:1%;"class="DataContainer"  >
+    <p style="letter-spacing: 1%; padding-left: 2%;">
+    Input Batches - The number of days to be predicted on 
+    <br>
+    Output Batches - The number of predicted days
+    <br>
+    Training data - The data that the LSTM trains off
+    <br>
+    Prediction data- The data that is used to generate predictions
+    <br>
+    Epochs- Number of times the LSTM runs throught the training data
+    <br>
+    Activation Function Layer - Activation function decides, whether a neuron should be activated
+    <br>
+    Loss Function - The difference between the actual output and the predicted output from the model.  
+    <br> 
+    Stacked Layers - Allows LSTM layer outputs to be used as an input to a subsequent LSTM layer.
+    </p>
+  </div>
+
+
+</body>
