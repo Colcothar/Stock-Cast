@@ -47,11 +47,15 @@ def validateCSVData(processedData,minDataTrue, minData):
             error= "Data contains non integers"
 
     if(minDataTrue==True):
-        if(len(processedData)<minData):
-            valid=2
+        if(len(processedData)==0):
+            valid = 2
+            error = "No data"
+        elif(len(processedData)<minData):
+            valid = 3
             error = "Not enough data"
+        
 
-    return error, valid
+    return valid, error 
 
 #function to get information about the stock
 def getStockInfo(stock):
@@ -91,6 +95,10 @@ def getStockData(stockTicker):
 def main():
     return render_template('index.html')
 
+@app.route('/error')
+def error():
+    return render_template('error.html')
+
 @app.route('/basic') #displays basic page
 def basic():
    return render_template('basicPredictor.html')
@@ -98,6 +106,12 @@ def basic():
 @app.route('/advanced') #displays advanced page
 def advanced():
    return render_template('advancedPredictor.html')
+
+@app.route('/help') #displays help page
+def help():
+   return render_template('help.html')
+
+
 
 @app.route('/predictions')
 def predictions():
@@ -152,12 +166,12 @@ def basicUploader2():
             processedData= getStockData(stockTicker) 
             
             valid, error = validateCSVData(processedData, True, 1)
-            
+
             if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
                 return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
             
-         '''
-         generate predictions
+        '''
+        generate predictions
         generate graph
         
         '''

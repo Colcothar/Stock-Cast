@@ -1,26 +1,31 @@
-<html>
-
 <head>
   <title>StockPredictor</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
 </head>
 
 <body>
   <div id="title">
-    <h1> Stock Predictor </h1>
+      <a href="/">
+          <h1> Stock Predictor </h1>
+      </a>
   </div>
 
-  <button style="margin-left: 20%; margin-right: 10%; background-color: #201F58;" class="menuBtn">Basic </button>
-  <button style="margin-left: 10%; " class="menuBtn">Advanced</button>
+  <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; " class="menuBtn">Basic
+  </button>
+
+  <button onclick="window.location.href='advanced';" style="margin-left: 10%;"
+      class="menuBtn">Advanced
+  </button>
 
 
-  <div style="height: 17%;" class="DataContainer">
-    <div class="subTitle" >
-      <p style="padding-left: 2%; ">Help</p></div>
+  <div style="height: 15%;" class="DataContainer">
+    <div class="subTitle subTitle2" >
+      <p >Help</p></div>
 </div>
    
   <div style="margin-top:1%;"class="DataContainer"  >
-    <p style="letter-spacing: 1%; padding-left: 2%;">
+    <p id="helpText">
     Input Batches - The number of days to be predicted on 
     <br>
     Output Batches - The number of predicted days

@@ -1,20 +1,34 @@
+<head>
+    <title>StockPredictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<html>
-	<head>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-			<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-				<title>StockPredictor </title>
+</head>
+
+<body>
+    <div id="title">
+        <a href="/">
+            <h1> Stock Predictor </h1>
+        </a>
+    </div>
+
+    <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; " class="menuBtn">Basic
+    </button>
+
+    <button onclick="window.location.href='advanced';" style="margin-left: 10%;"
+        class="menuBtn">Advanced
+    </button>
+
+		
+
 			</head>
-			<img src="/static/img/cost.png">
-				<img src="{{address}}">
+			
 					<body>
-						<div id="title">
-							<h1> Stock Predictor </h1>
-						</div>
+
 						
-						<div style="height: 70%;" class="DataContainer">
+						<div style="height: 60%;" class="DataContainer">
 							<h2> Stock Name</h2>
-							<div style="overflow: hidden; height: 80% !important;" class="table">
+							<div style="overflow: hidden; height: 75% !important;" class="table">
 							    
 								<div class="twoRow">
 									<div id="predictionBox" class="box">
@@ -30,7 +44,7 @@
                                     </div>
                                 </div>
                                 
-								<div style="height: 5%" class="twoRow">
+								<div style="height: 6%" class="twoRow">
 									<div id="predictionBox" class="box">
 									    <button style=""class="downloadBtn">
 									    <i class="fa fa-download"></i> Download image
@@ -51,5 +65,5 @@
 							</div>
 						</div>
 												</body>
-											</html>
+</html>
   

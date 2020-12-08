@@ -3,6 +3,8 @@
 <head>
     <title>StockPredictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 
 </head>
 
@@ -16,11 +18,17 @@
     <button onclick="window.location.href='basic';" style="margin-left: 20%; margin-right: 10%; " class="menuBtn">Basic
     </button>
 
-    <button onclick="window.location.href='advanced';" style="margin-left: 10%; background-color: #201F58;"
-        class="menuBtn">Advanced
+    <button onclick="window.location.href='advanced';" style="margin-left: 10%; background-color: #201F58;" class="menuBtn">
+        Advanced
+    </button> 
+    
+    
+    <button onclick="window.location.href='help';" id="helpButton">
+        <i class="fa fa-question-circle" style="font-size: 3vw; color: black;"></i>
     </button>
 
-    <div style="font-size: 200%;" class="DataContainer">
+
+    <div style="font-size: 2vw;" class="DataContainer">
 
         <div class="table">
 
