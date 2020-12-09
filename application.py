@@ -28,11 +28,12 @@ thread = Thread()
 thread_stop_event = Event()
 
 #fynction that checks the csv has valid data
-def validateCSVData(processedData,minDataTrue, minData):
+def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
     '''
+    returns 0 for valid data
     returns 1 for not integers
-    returns 2 for not enough data 
-    
+    returns 2 for no data 
+    returns 3 for not enough data
    '''
 
     valid = 0
@@ -49,9 +50,13 @@ def validateCSVData(processedData,minDataTrue, minData):
     if(minDataTrue==True):
         if(len(processedData)==0):
             valid = 2
-            error = "No data"
+            if(predictionType=="basic"):
+                error = "Stock doesn't exist"
+            else:
+                error = "No data"
         elif(len(processedData)<minData):
             valid = 3
+
             error = "Not enough data"
         
 
@@ -165,7 +170,7 @@ def basicUploader2():
             
             processedData= getStockData(stockTicker) 
             
-            valid, error = validateCSVData(processedData, True, 1)
+            valid, error = validateCSVData(processedData, True, 1, "basic")
 
             if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
                 return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
@@ -226,19 +231,26 @@ def advancedUploader2():
             f.write(str(epochs)+"\n")
             f.write(str(stackedLayers))
 
-        predictionData=loadCSV(predictionDataSRC, 0) #load prediction data
-        #predictionDataLength = len(predictionData) #number of elements in predictiond data
-        if (validateCSVData(predictionData, True, (inputBatches+outputBatches))==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-            return render_template('error.html') # return an error if there are not ints
-
+        
         trainingData=loadCSV(trainingDataSRC, 0)
-        #trainingDataLength = len(predictionData)
-        if (validateCSVData(trainingData, True, inputBatches)==False): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-            return render_template('error.html') # return an error if there are not ints 
+        predictionData=loadCSV(predictionDataSRC, 0) #load prediction data
 
 
+        #predictionDataLength = len(predictionData) #number of elements in predictiond data
 
-        return render_template('cool_form.html')
+        if(validateCSVData(predictionData,True,inputBatches,"advanced")[0] == 3):
+            error = "Input Batches too large, or not enough prediction data"
+
+
+        if (validateCSVData(trainingData, True, (inputBatches+outputBatches), "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            error = "Batches too large, or not enough training data"
+
+        if(error!=""):
+            return render_template('cool_form.html', message=error)
+
+        if (validateCSVData(trainingData, True, (inputBatches+outputBatches)*10, "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            warning = "Warning: Little training data "
+
 
 
 @app.route('/results')
