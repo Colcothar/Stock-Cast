@@ -16,7 +16,7 @@ def downloadStockData(stockTicker):
         rawData.append(history["High"][i]) #writes the max stock price of the day to the array
     return(rawData) #return array
 
-stocks = [line.rstrip('\n') for line in open("/var/www/html/StockPredictor/stockList.txt")]
+stocks = [line.rstrip('\n') for line in open("/var/www/html/StockPredictor/basic/Training Algorithm/stockListLite.txt")]
 
 
 
@@ -36,7 +36,7 @@ for i in stocks:
         newArr= arr.tolist()
         # print(str(newArr)[1:-1])
 
-        with open("/var/www/html/StockPredictor/stockData.csv", "a") as f:
+        with open("/var/www/html/StockPredictor/basic/Training Algorithm/stockDataLite.csv", "a") as f:
             for x in arr:
                 print(x[0])
                 f.write((str(x[0])+"\n"))
