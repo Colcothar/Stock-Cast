@@ -27,20 +27,21 @@
 
 						
 						<div style="height: 60%;" class="DataContainer">
-							<h2> Stock Name</h2>
+							<h2> {{stockName}}</h2>
 							<div style="overflow: hidden; height: 75% !important;" class="table">
 							    
 								<div class="twoRow">
 									<div id="predictionBox" class="box">
-										<img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
+										<iframe class="predictionImage" src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol={{stock}}&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source"></iframe>
 									</div>
 									
 									<div id="predictionBox" class="box">
-										<img class="predictionImage" src="https://image.shutterstock.com/image-vector/economy-growth-icon-infographic-falling-600w-1718831230.jpg">
+										<img class="predictionImage" src="/static/img/basicPrediction.png">
 									</div>
 												
 									<div id="predictionBox" style="text-align: left;  vertical-align: top; padding-top: 2%;" class="box">
-                                         text
+		
+										 {{summary}}
                                     </div>
                                 </div>
                                 
@@ -64,6 +65,10 @@
 								</div>
 							</div>
 						</div>
-												</body>
+
+
+
+
+					</body>
 </html>
   

@@ -8,8 +8,21 @@ import os
 import requests
 import csv
 import yfinance as yf
+from matplotlib import pyplot as plt
+import tensorflow.keras
 
+import numpy
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.models import load_model
+import tensorflow as tf
+from numba import cuda 
+device = cuda.get_current_device()
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=128)])
 
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
@@ -37,7 +50,7 @@ def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
    '''
 
     valid = 0
-    error=""
+    error="No error, data is valid"
     
     for i in processedData:
         try: # try converting to int
@@ -68,13 +81,22 @@ def getStockInfo(stock):
     msft = yf.Ticker(str(stock))
 
 
-    print(msft.info['longName']) #get full name 
+    name = (msft.info['longName']) #get full name 
 
-    txt = msft.info['longBusinessSummary'] #get the summary about the company
-    x = txt.split(". ") #split the summary into sentences 
-    print(x[0]) #get first sentence
-    data = (hist["High"])
-    print(data[1])
+    summary = msft.info['longBusinessSummary'] #get the summary about the company
+    sentance = summary.split(". ") #split the summary into sentences 
+
+    if(len(sentance[0]) <= len(name)):
+        info = sentance[0] + " " + sentance[1] + "."
+        return name, str(info)
+    else:
+        info = sentance[0] + "."
+        return name, str(info)
+
+
+    #print(x[0]) #get first sentence
+    #data = (hist["High"])
+    #print(data[1])
 
 
 def loadCSV(location, column ): #load CSV data into array
@@ -126,6 +148,7 @@ def predictions():
 @app.route('/basicUploader', methods = ['GET', 'POST']) #function to process the entered data to the basic page
 def basicUploader2():
     
+
     if request.method == 'POST':
 
         processedData=[] # create blank array to hold the final stock data
@@ -160,31 +183,93 @@ def basicUploader2():
                 stockTicker=textBoxStock #user has entered a ticker into the text box
         else:
             location=0 #user has uploaded a csv
+    
+
             processedData=loadCSV('/var/www/html/StockPredictor/basic/PastStockData.csv',0)
+
+
 
             
                     
 
 
-        if(location!=0 and location!=3 ): #if the user has only provided a ticker
-            
+        if(location!=0 and location!=3 ): #if the user has only provided a ticker            
             processedData= getStockData(stockTicker) 
             
-            valid, error = validateCSVData(processedData, True, 1, "basic")
-
-            if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-                return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
+        valid, error = validateCSVData(processedData, True, 60, "basic")
+        #print(error)
+        if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
             
         '''
         generate predictions
         generate graph
         
         '''
+        #print("Printing data")
+        #sleep(2)
         #print(processedData)
 
-        link = str("https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + dropDownStock + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source")
-        link = "https://bbc.co.uk"
-        return render_template('cool_form.html', stock=str(dropDownStock), link=link)
+        sc = MinMaxScaler(feature_range = (0, 1))
+
+        scaledArray = numpy.array(processedData)
+        scaledArray = scaledArray .reshape(-1,1)
+        scaledArray = sc.fit_transform(scaledArray )
+
+        newScaled=[]
+        for x in scaledArray :
+            if( int(x[0])!=1 or int(x[0])!=0 or str(x[0])!="nan"):
+                newScaled.append(float(x[0]))
+
+        #sleep(4)
+        #print("\n\nPrinting 60 recent values")
+        #sleep(2)
+        #print(processedData[-60:])
+        #sleep(4)
+        #print("\n\nPrinting scaled data")
+        #sleep(2)
+        #print(newScaled[-60:])
+
+        xNew = numpy.array(newScaled[-60:])
+        
+        #print(xNew)
+        #print("here")
+        model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+        #print("here2")
+        xNew = xNew.reshape((1,60,1))
+        yNew = model.predict(xNew, verbose=1)
+        unscaledY = sc.inverse_transform(yNew)
+
+        yNew = yNew[0]
+        unscaledY=unscaledY[0]
+
+        #print(yNew)
+
+        #print(unscaledY, unscaledY[0])
+        #print(processedData[-4:])
+
+        link = processedData[-4:]
+        link.append(unscaledY[0] )
+
+        plt.plot( [0,1,2,3,4], link , "-x", color='red')
+        plt.plot( [4,5,6,7], unscaledY , "-x", color='blue')
+        
+        plt.xlabel("Day")
+        plt.ylabel("Value")
+        
+        plt.savefig('/var/www/html/StockPredictor/static/img/basicPrediction.png')
+
+        if(stockTicker!=""):
+            
+            name, summary = getStockInfo(stockTicker)   
+          
+        del model  
+        #tensorflow.keras.clear_session()
+        
+        
+
+        
+        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, summary=summary)
 
 @app.route('/advancedUploader', methods = ['GET', 'POST'])
 def advancedUploader2():
@@ -198,6 +283,7 @@ def advancedUploader2():
 
         inputBatches = request.form['inputBatches']
         print("inputBatches: " + inputBatches)
+
 
         activationFunction = request.form['activationFunction']
         print("activationFunction: " + activationFunction)
