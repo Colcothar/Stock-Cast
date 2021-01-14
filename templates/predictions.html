@@ -36,7 +36,7 @@
 									</div>
 									
 									<div id="predictionBox" class="box">
-										<img class="predictionImage" src="/static/img/basicPrediction.png">
+										<img class="predictionImage" src={{imgSRC}}>
 									</div>
 												
 									<div id="predictionBox" style="text-align: left;  vertical-align: top; padding-top: 2%;" class="box">
@@ -46,16 +46,21 @@
                                 </div>
                                 
 								<div style="height: 6%" class="twoRow">
+
 									<div id="predictionBox" class="box">
-									    <button style=""class="downloadBtn">
+										<a href={{imgSRC}} download>
+									    <button class="downloadBtn">
 									    <i class="fa fa-download"></i> Download image
-									    </button>
+										</button>
+										</a>
 								    </div>
 								
 								    <div id="predictionBox" class="box">
+										<a href="/static/img/data.csv" download>
 									    <button  class="downloadBtn">
 									    <i class="fa fa-download"></i> Download as csv
-                                        </button>
+										</button>
+										</a>
 								    </div>
 								
 								    <div id="predictionBox" class="box">

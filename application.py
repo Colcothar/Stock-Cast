@@ -24,12 +24,9 @@ for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu, True)
 tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=128)])
 
-def initModel():
-    print("HEEEEEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRRRRRREEE")
-    global model
-    model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
 
-initModel()
+
 
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
@@ -158,7 +155,9 @@ def predictions():
 
 @app.route('/basicUploader', methods = ['GET', 'POST']) #function to process the entered data to the basic page
 def basicUploader2():
-    
+
+    model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+
 
     if request.method == 'POST':
 
@@ -208,27 +207,18 @@ def basicUploader2():
             processedData= getStockData(stockTicker) 
             
         valid, error = validateCSVData(processedData, True, 60, "basic")
-        #print(error)
+
         if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
             return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
-            
-        '''
-        generate predictions
-        generate graph
-        
-        '''
-        #print("Printing data")
-        #sleep(2)
-        #print(processedData)
 
-        sc = MinMaxScaler(feature_range = (0, 1))
-
-        scaledArray = numpy.array(processedData)
-        scaledArray = scaledArray .reshape(-1,1)
-        scaledArray = sc.fit_transform(scaledArray )
+        sc = MinMaxScaler(feature_range = (0, 1)) #defines a new scaling function
+ 
+        scaledArray = numpy.array(processedData) #creates a numpy array
+        scaledArray = scaledArray .reshape(-1,1) #reshapes 
+        scaledArray = sc.fit_transform(scaledArray ) #scales data 
 
         newScaled=[]
-        for x in scaledArray :
+        for x in scaledArray : #sometimes, after scalling data can include 1,0 or nan after scalling. These must be removed 
             if( int(x[0])!=1 or int(x[0])!=0 or str(x[0])!="nan"):
                 newScaled.append(float(x[0]))
 
@@ -241,46 +231,56 @@ def basicUploader2():
         #sleep(2)
         #print(newScaled[-60:])
 
-        xNew = numpy.array(newScaled[-60:])
+        xNew = numpy.array(newScaled[-60:]) #get 60 recent days
         
         #print(xNew)
         #print("here")
         
         #print("here2")
-        xNew = xNew.reshape((1,60,1))
-        yNew = model.predict(xNew, verbose=1)
-        unscaledY = sc.inverse_transform(yNew)
 
-        yNew = yNew[0]
-        unscaledY=unscaledY[0]
+        xNew = xNew.reshape((1,60,1)) #reshapes the array ready for predictions 
+        yNew = model.predict(xNew, verbose=1) #predicts new stock value
+        unscaledY = sc.inverse_transform(yNew) #this unscales the data
+
+        yNew = yNew[0] #converts the 2d array back to 1d
+        unscaledY=unscaledY[0] #converts the 2d array back to 1d
 
         #print(yNew)
 
         #print(unscaledY, unscaledY[0])
         #print(processedData[-4:])
 
-        link = processedData[-4:]
-        link.append(unscaledY[0] )
+        link = processedData[-4:] #this takes the 4 most recent 
+        link.append(unscaledY[0] ) #adds the first predicted value. This makes the graph connect up
 
-        plt.plot( [0,1,2,3,4], link , "-x", color='red')
-        plt.plot( [4,5,6,7], unscaledY , "-x", color='blue')
         
-        plt.xlabel("Day")
-        plt.ylabel("Value")
-        
-        plt.savefig('/var/www/html/StockPredictor/static/img/basicPrediction.png')
+        f = open('/var/www/html/StockPredictor/static/img/data.csv', "w")
+        for row in unscaledY:
+            f.writelines(str(row), "\n")
+        f.close()
 
-        if(stockTicker!=""):
-            
-            name, summary = getStockInfo(stockTicker)   
+
+
+        plt.plot( [0,1,2,3,4], link , "-x", color='red') #this plots the previous stock values in red
+        plt.plot( [4,5,6,7], unscaledY , "-x", color='blue') # this plots the predicted stock values in blue
+        
+        plt.xlabel("Day") #provides the label for the X axis
+        plt.ylabel("Value") #providesw the label for the Y axis
+        
+        plt.savefig('/var/www/html/StockPredictor/static/img/basicPrediction.png') #this saves the generated graph
+
+
+
+        if(stockTicker!=""): #if the user has chosen a stock ticker
+            name, summary = getStockInfo(stockTicker)    #gets the stock ticker name and summary
           
         del model  
         #tensorflow.keras.clear_session()
         
         
-
+        imgSRC = "/static/img/basicPrediction.png" #this variable points to the location of saved image
         
-        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, summary=summary)
+        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, imgSRC=imgSRC, summary=summary)
 
 @app.route('/advancedUploader', methods = ['GET', 'POST'])
 def advancedUploader2():
