@@ -24,6 +24,13 @@ for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu, True)
 tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=128)])
 
+def initModel():
+    print("HEEEEEEEEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRRRRRRRREEE")
+    global model
+    model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+
+initModel()
+
 #export FLASK_APP=/var/www/html/FlaskStuff/async_flask/application.py 
 #flask run --host=0.0.0.0
 
@@ -39,6 +46,10 @@ socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 #this starts the stopwatch thread. This starts a timer so the user knows how long the model has been training for.
 thread = Thread()
 thread_stop_event = Event()
+
+
+
+
 
 #fynction that checks the csv has valid data
 def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
@@ -67,7 +78,7 @@ def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
                 error = "Stock doesn't exist"
             else:
                 error = "No data"
-        elif(len(processedData)<minData):
+        elif(len(processedData)<int(minData)):
             valid = 3
 
             error = "Not enough data"
@@ -234,7 +245,7 @@ def basicUploader2():
         
         #print(xNew)
         #print("here")
-        model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+        
         #print("here2")
         xNew = xNew.reshape((1,60,1))
         yNew = model.predict(xNew, verbose=1)
@@ -281,8 +292,8 @@ def advancedUploader2():
         title = request.form['title']
         print("Title: " + title)
 
-        inputBatches = request.form['inputBatches']
-        print("inputBatches: " + inputBatches)
+        inputBatches = int(request.form['inputBatches'])
+        print("inputBatches: " + str(inputBatches))
 
 
         activationFunction = request.form['activationFunction']
@@ -292,8 +303,8 @@ def advancedUploader2():
         trainingData = request.files['trainingData']
         trainingData.save(trainingDataSRC)
       
-        outputBatches = request.form['outputBatches']
-        print("outputBatches: " + outputBatches) 
+        outputBatches = int(request.form['outputBatches'])
+        print("outputBatches: " + str(outputBatches)) 
         
         lossFunction = request.form['lossFunction']
         print("lossFunction: " + lossFunction)
@@ -321,23 +332,38 @@ def advancedUploader2():
         trainingData=loadCSV(trainingDataSRC, 0)
         predictionData=loadCSV(predictionDataSRC, 0) #load prediction data
 
+ 
+        error=[]
+        
 
         #predictionDataLength = len(predictionData) #number of elements in predictiond data
+        #print(len(predictionData), inputBatches)
 
-        if(validateCSVData(predictionData,True,inputBatches,"advanced")[0] == 3):
-            error = "Input Batches too large, or not enough prediction data"
+        validatedPrediction = validateCSVData(predictionData,True,inputBatches,"advanced")[0]
+
+        if( validatedPrediction == 3):
+            error.append("Input Batches too large, or not enough prediction data")
+        elif( validatedPrediction == 1):
+            error.append("Prediction data csv contains non integers")
 
 
-        if (validateCSVData(trainingData, True, (inputBatches+outputBatches), "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-            error = "Batches too large, or not enough training data"
-
-        if(error!=""):
-            return render_template('cool_form.html', message=error)
+        validatedTraining = validateCSVData(trainingData, True, (inputBatches+outputBatches), "advanced")[0]
+    
+        if (validatedTraining == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
+            error.append("Batches too large, or not enough training data")
+        elif(validatedTraining==1):
+            error.append("Training data csv contains non integers")
+        
+        
+        if(len(error)!=0):
+            return render_template('error.html', message=error)
+        else:
+            print("Both CSV files are valid")
 
         if (validateCSVData(trainingData, True, (inputBatches+outputBatches)*10, "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
             warning = "Warning: Little training data "
 
-
+        return render_template('blank.html')
 
 @app.route('/results')
 def result():
@@ -416,4 +442,5 @@ def cool_form():
 
 
 if __name__ == '__main__':
+    initModel()
     socketio.run(app)

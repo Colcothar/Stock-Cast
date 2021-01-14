@@ -28,7 +28,9 @@
 </div>
    
   <div style="margin-top:1%;" class=" DataContainer"  >
-    <p id="helpText" > {{message}}</piv>
+    {%for row in message%}    
+    <p id="helpText" > {{row}}</p>
+    {%endfor%}
   </div>
 
 
