@@ -2,7 +2,7 @@
 from flask_socketio import SocketIO, emit
 from flask import Flask, render_template, url_for, copy_current_request_context, request, url_for, redirect
 from random import random
-from time import sleep
+import time 
 from threading import Thread, Event
 import os
 import requests
@@ -15,6 +15,7 @@ import numpy
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from tensorflow.keras.models import load_model
+
 import tensorflow as tf
 from numba import cuda 
 device = cuda.get_current_device()
@@ -22,7 +23,7 @@ device = cuda.get_current_device()
 gpus = tf.config.experimental.list_physical_devices('GPU')
 for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu, True)
-tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=128)])
+tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=256)])
 
 model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
 
@@ -113,7 +114,7 @@ def loadCSV(location, column ): #load CSV data into array
     with open(location) as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
         for row in readCSV:
-            rawData.append(row[column].replace(",", "")) #often data sets use commas to make the data more presentable. Eg 10000 becomes 10,000. This undoes this
+            rawData.append(float(row[column].replace(",", ""))) #often data sets use commas to make the data more presentable. Eg 10000 becomes 10,000. This undoes this
     return rawData
 
 def getStockData(stockTicker):
@@ -123,7 +124,7 @@ def getStockData(stockTicker):
     history = stock.history(period="max") #gets history
 
     for i in range(len(history)):
-        rawData.append(history["High"][i]) #writes the max stock price of the day to the array
+        rawData.append(float(history["High"][i])) #writes the max stock price of the day to the array
     return(rawData) #return array
 
 @app.route('/') #displays home page
@@ -155,8 +156,9 @@ def predictions():
 
 @app.route('/basicUploader', methods = ['GET', 'POST']) #function to process the entered data to the basic page
 def basicUploader2():
-
-    model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
+    basicSRC = "/var/www/html/StockPredictor/basic/"
+    staticSRC = "/var/www/html/StockPredictor/static/img/"
+    model = load_model(str(basicSRC + 'tempModel.h5'), compile = False)
 
 
     if request.method == 'POST':
@@ -164,7 +166,7 @@ def basicUploader2():
         processedData=[] # create blank array to hold the final stock data
 
         stockData = request.files['stockData'] #saves the uploaded file to PastStockData.csv
-        stockData.save('/var/www/html/StockPredictor/basic/PastStockData.csv')
+        stockData.save(str(basicSRC + 'PastStockData.csv'))
       
         textBoxStock = request.form['textBoxStock'] #saves the stock entered into the textbox into variable
         print("Text box: " + textBoxStock)
@@ -172,7 +174,7 @@ def basicUploader2():
         dropDownStock = request.form['dropDownStock']# saves stock picked from dropdownbox into variable
         print("Drop down: " + dropDownStock)
  
-        with open('/var/www/html/StockPredictor/basic/PastStockData.csv') as f:
+        with open(str(basicSRC + 'PastStockData.csv')) as f:
             firstLine = f.readline()
 
         stock="null"
@@ -193,19 +195,20 @@ def basicUploader2():
                 stockTicker=textBoxStock #user has entered a ticker into the text box
         else:
             location=0 #user has uploaded a csv
-    
-
-            processedData=loadCSV('/var/www/html/StockPredictor/basic/PastStockData.csv',0)
-
+            stockTicker=""
+            processedData=loadCSV(str(basicSRC + 'PastStockData.csv'),0)
 
 
-            
+        
                     
 
 
         if(location!=0 and location!=3 ): #if the user has only provided a ticker            
             processedData= getStockData(stockTicker) 
             
+
+
+
         valid, error = validateCSVData(processedData, True, 60, "basic")
 
         if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
@@ -221,15 +224,6 @@ def basicUploader2():
         for x in scaledArray : #sometimes, after scalling data can include 1,0 or nan after scalling. These must be removed 
             if( int(x[0])!=1 or int(x[0])!=0 or str(x[0])!="nan"):
                 newScaled.append(float(x[0]))
-
-        #sleep(4)
-        #print("\n\nPrinting 60 recent values")
-        #sleep(2)
-        #print(processedData[-60:])
-        #sleep(4)
-        #print("\n\nPrinting scaled data")
-        #sleep(2)
-        #print(newScaled[-60:])
 
         xNew = numpy.array(newScaled[-60:]) #get 60 recent days
         
@@ -250,37 +244,67 @@ def basicUploader2():
         #print(unscaledY, unscaledY[0])
         #print(processedData[-4:])
 
-        link = processedData[-4:] #this takes the 4 most recent 
-        link.append(unscaledY[0] ) #adds the first predicted value. This makes the graph connect up
+        link = processedData[-1:] #this takes the 4 most recent 
+        for i in range (len(unscaledY)):
+            link.append(unscaledY[i]) #adds the first predicted value. This makes the graph connect up
 
         
-        f = open('/var/www/html/StockPredictor/static/img/data.csv', "w")
+        f = open(str(staticSRC + 'data.csv'), "w")
         for row in unscaledY:
-            f.writelines(str(row), "\n")
+            f.writelines(str(row))
+            f.writelines("\n")
         f.close()
 
 
-
-        plt.plot( [0,1,2,3,4], link , "-x", color='red') #this plots the previous stock values in red
-        plt.plot( [4,5,6,7], unscaledY , "-x", color='blue') # this plots the predicted stock values in blue
+        fig = plt.figure()
+        plt.plot( [0,1,2,3], processedData[-4:] , "-x", color='red') #this plots the previous stock values in red
+        plt.plot( [3,4,5,6,7], link , "-x", color='blue') # this plots the predicted stock values in blue
         
         plt.xlabel("Day") #provides the label for the X axis
         plt.ylabel("Value") #providesw the label for the Y axis
         
-        plt.savefig('/var/www/html/StockPredictor/static/img/basicPrediction.png') #this saves the generated graph
+        
 
+        newName =  "basicPrediction" + str(time.time()) + ".png"
+
+        for filename in os.listdir(str(staticSRC)):
+            if filename.startswith('basicPrediction'):  # not to remove other images
+                os.remove(str(staticSRC) + filename)
+
+
+        plt.savefig(staticSRC + newName) #this saves the generated graph
+        plt.close(fig)
 
 
         if(stockTicker!=""): #if the user has chosen a stock ticker
             name, summary = getStockInfo(stockTicker)    #gets the stock ticker name and summary
-          
-        del model  
-        #tensorflow.keras.clear_session()
+            pastSRC = "https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + stockTicker + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source"
+        else:
+            name, summary = "", ""
+            fig = plt.figure()
+            plt.plot( processedData , "-x", color='red') #this plots the previous stock values in red
+            plt.xlabel("Day") #provides the label for the X axis
+            plt.ylabel("Value") #providesw the label for the Y axis
+            pastNewName =  "basicPast" + str(time.time()) + ".png"
+
+            for filename in os.listdir(str(staticSRC)):
+                if filename.startswith('basicPast'):  # not to remove other images
+                    os.remove(str(staticSRC) + filename)
+
+
+            plt.savefig(staticSRC + pastNewName) #this saves the generated graph
+            plt.close(fig)
+
+            pastSRC = "/static/img/" + pastNewName 
+            
+
+
+
+
         
+        imgSRC = "/static/img/" + newName #this variable points to the location of saved image
         
-        imgSRC = "/static/img/basicPrediction.png" #this variable points to the location of saved image
-        
-        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, imgSRC=imgSRC, summary=summary)
+        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, imgSRC=imgSRC, pastSRC=pastSRC, summary=summary)
 
 @app.route('/advancedUploader', methods = ['GET', 'POST'])
 def advancedUploader2():
@@ -365,6 +389,10 @@ def advancedUploader2():
 
         return render_template('blank.html')
 
+@app.route('/advancedProgress', methods = ['GET', 'POST'])
+def advancedProgress2():
+    return render_template("blank.html")
+
 @app.route('/results')
 def result():
     return render_template('results.html')
@@ -404,7 +432,11 @@ def randomNumberGenerator():
                 minute = 0    
                 hour+=1
         else:
+            socketio.sleep(1)
+            socketio.emit('newdata', {'minute': minute, 'second': second, 'hour': hour, 'status': status}, namespace='/test')
+
             return 0
+
         socketio.sleep(1)
         socketio.emit('newdata', {'minute': minute, 'second': second, 'hour': hour, 'status': status}, namespace='/test')
         
