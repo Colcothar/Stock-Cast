@@ -1,4 +1,3 @@
-# Start with a basic flask app webpage.
 from flask_socketio import SocketIO, emit
 from flask import Flask, render_template, url_for, copy_current_request_context, request, url_for, redirect
 from random import random
@@ -18,14 +17,7 @@ from tensorflow.keras.models import load_model
 
 import tensorflow as tf
 from numba import cuda 
-device = cuda.get_current_device()
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-for gpu in gpus:
-    tf.config.experimental.set_memory_growth(gpu, True)
-tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=256)])
-
-model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = False)
 
 
 
@@ -33,25 +25,65 @@ model = load_model('/var/www/html/StockPredictor/basic/tempModel.h5', compile = 
 #flask run --host=0.0.0.0
 
 __author__ = 'Barney Morris'
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
-#turn the flask app into a socketio app
+
+    
+
+#This creates a socket app instance 
 socketio = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
-#this starts the stopwatch thread. This starts a timer so the user knows how long the model has been training for.
+if __name__ == 'application':
+
+    device = cuda.get_current_device()
+
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
+    tf.config.experimental.set_virtual_device_configuration(gpus[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=256)])
+
+
+    socketio.run(app)
+
+
+
+#This starts the stopwatch thread. This starts a timer so the user knows how long the model has been training for.
 thread = Thread()
-thread_stop_event = Event()
+threadStopEvent = Event()
+
+
+'''
+Below are 3 variables that the file path to important folders
+
+The basicSRC hold the complete file path for the basic folder
+The staticSRC holds the complete file path to the images folder
+The advancedSRC holds the complete file path for the advanced folder
+
+This makes the rest of the code easier to view and understand withouth having to have long file paths everywhere
+'''
+global basicSRC, staticSRC
+basicSRC = "/var/www/html/StockPredictor/basic/"
+advancedSRC = "/var/www/html/StockPredictor/advanced/"
+staticSRC = "/var/www/html/StockPredictor/static/img/"
 
 
 
+'''
+This loads the model in and assigns to a global variable
+This is far more efficient than loading in a model each time the basicUploader2 function is called
+'''
+
+global model
+model = load_model(str(basicSRC + 'tempModel.h5'), compile = False)
 
 
-#fynction that checks the csv has valid data
+
 def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
     '''
+    This function checks the csv has valid data
+
     returns 0 for valid data
     returns 1 for not integers
     returns 2 for no data 
@@ -84,40 +116,52 @@ def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
 
     return valid, error 
 
-#function to get information about the stock
+
 def getStockInfo(stock):
+    '''
+    This function gets stock information
+    It uses yFinance to get the stock name and the stock summary
+    The stock summary is often quite long, so I just take the first sentance
+    However, some companies put a "." afer their company name eg "Apple Inc."
+    Meaning that the entire summary ends up being "Apple Inc.
+    So if the summary is the same length as the name, I take two sentances instead of one
+    '''
+
 
     msft = yf.Ticker(str(stock))
 
 
-    name = (msft.info['longName']) #get full name 
+    name = (msft.info['longName']) #Get full name 
 
-    summary = msft.info['longBusinessSummary'] #get the summary about the company
-    sentance = summary.split(". ") #split the summary into sentences 
+    summary = msft.info['longBusinessSummary'] #Get the summary about the company
+    sentance = summary.split(". ") #Split the summary into sentences 
 
-    if(len(sentance[0]) <= len(name)):
-        info = sentance[0] + " " + sentance[1] + "."
-        return name, str(info)
+    if(len(sentance[0]) <= len(name)): #Is the summary too short?
+        info = sentance[0] + " " + sentance[1] + "." #If the summary is too short, use 2 sentances instead of 1
+
     else:
         info = sentance[0] + "."
-        return name, str(info)
+    
+    return name, str(info)
 
 
-    #print(x[0]) #get first sentence
-    #data = (hist["High"])
-    #print(data[1])
+def loadCSV(location, column ): 
+    #This functions loads CSV data into array
 
-
-def loadCSV(location, column ): #load CSV data into array
-    rawData=[]
+    rawData=[] #Assign new blank array 
 
     with open(location) as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
-        for row in readCSV:
+        for row in readCSV: #iterate for every row in CSV
             rawData.append(float(row[column].replace(",", ""))) #often data sets use commas to make the data more presentable. Eg 10000 becomes 10,000. This undoes this
     return rawData
 
 def getStockData(stockTicker):
+    '''
+    This function takes a stockTicker as a parameter
+    It returns the past stock values, for the given  
+    '''
+
     rawData=[]
     stock = yf.Ticker(str(stockTicker)) #creates request
 
@@ -126,6 +170,7 @@ def getStockData(stockTicker):
     for i in range(len(history)):
         rawData.append(float(history["High"][i])) #writes the max stock price of the day to the array
     return(rawData) #return array
+
 
 @app.route('/') #displays home page
 def main():
@@ -137,28 +182,25 @@ def error():
 
 @app.route('/basic') #displays basic page
 def basic():
-   return render_template('basicPredictor.html')
+    return render_template('basicPredictor.html')
 
 @app.route('/advanced') #displays advanced page
 def advanced():
-   return render_template('advancedPredictor.html')
+    return render_template('advancedPredictor.html')
 
 @app.route('/help') #displays help page
 def help():
-   return render_template('help.html')
+    return render_template('help.html')
 
 
 
 @app.route('/predictions')
 def predictions():
-   location = "/static/img/cost.png"
-   return render_template('predictions.html', address=location)
+    location = "/static/img/cost.png"
+    return render_template('predictions.html', address=location)
 
 @app.route('/basicUploader', methods = ['GET', 'POST']) #function to process the entered data to the basic page
 def basicUploader2():
-    basicSRC = "/var/www/html/StockPredictor/basic/"
-    staticSRC = "/var/www/html/StockPredictor/static/img/"
-    model = load_model(str(basicSRC + 'tempModel.h5'), compile = False)
 
 
     if request.method == 'POST':
@@ -166,15 +208,15 @@ def basicUploader2():
         processedData=[] # create blank array to hold the final stock data
 
         stockData = request.files['stockData'] #saves the uploaded file to PastStockData.csv
-        stockData.save(str(basicSRC + 'PastStockData.csv'))
-      
+        stockData.save(basicSRC + 'PastStockData.csv')
+    
         textBoxStock = request.form['textBoxStock'] #saves the stock entered into the textbox into variable
         print("Text box: " + textBoxStock)
 
         dropDownStock = request.form['dropDownStock']# saves stock picked from dropdownbox into variable
         print("Drop down: " + dropDownStock)
- 
-        with open(str(basicSRC + 'PastStockData.csv')) as f:
+
+        with open(basicSRC + 'PastStockData.csv') as f:
             firstLine = f.readline()
 
         stock="null"
@@ -196,11 +238,7 @@ def basicUploader2():
         else:
             location=0 #user has uploaded a csv
             stockTicker=""
-            processedData=loadCSV(str(basicSRC + 'PastStockData.csv'),0)
-
-
-        
-                    
+            processedData=loadCSV((basicSRC + 'PastStockData.csv'),0)
 
 
         if(location!=0 and location!=3 ): #if the user has only provided a ticker            
@@ -215,7 +253,7 @@ def basicUploader2():
             return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
 
         sc = MinMaxScaler(feature_range = (0, 1)) #defines a new scaling function
- 
+
         scaledArray = numpy.array(processedData) #creates a numpy array
         scaledArray = scaledArray .reshape(-1,1) #reshapes 
         scaledArray = sc.fit_transform(scaledArray ) #scales data 
@@ -227,10 +265,6 @@ def basicUploader2():
 
         xNew = numpy.array(newScaled[-60:]) #get 60 recent days
         
-        #print(xNew)
-        #print("here")
-        
-        #print("here2")
 
         xNew = xNew.reshape((1,60,1)) #reshapes the array ready for predictions 
         yNew = model.predict(xNew, verbose=1) #predicts new stock value
@@ -238,11 +272,6 @@ def basicUploader2():
 
         yNew = yNew[0] #converts the 2d array back to 1d
         unscaledY=unscaledY[0] #converts the 2d array back to 1d
-
-        #print(yNew)
-
-        #print(unscaledY, unscaledY[0])
-        #print(processedData[-4:])
 
         link = processedData[-1:] #this takes the 4 most recent 
         for i in range (len(unscaledY)):
@@ -261,20 +290,29 @@ def basicUploader2():
         plt.plot( [3,4,5,6,7], link , "-x", color='blue') # this plots the predicted stock values in blue
         
         plt.xlabel("Day") #provides the label for the X axis
-        plt.ylabel("Value") #providesw the label for the Y axis
+        plt.ylabel("Value") #provides the label for the Y axis
         
         
 
         newName =  "basicPrediction" + str(time.time()) + ".png"
 
         for filename in os.listdir(str(staticSRC)):
-            if filename.startswith('basicPrediction'):  # not to remove other images
+            if filename.startswith('basicPrediction'):  
                 os.remove(str(staticSRC) + filename)
 
+        plt.savefig(staticSRC + newName) #Saves the generated graph
+        plt.close(fig) #Closes graph (so a new one can be made)
 
-        plt.savefig(staticSRC + newName) #this saves the generated graph
-        plt.close(fig)
 
+
+        '''
+        if the user has chosen a stock ticker, it will have a corresponding interactable graph on trading view
+
+        If the user has uploaded a file, then there will be no interactable graph widget on trading view
+        So I will need to generate a graph of past stock data in place
+
+        the variable pastSRC can then hold the location of past stock data. This can either the trading view widget, OR the location of a locally made graph
+        ''' 
 
         if(stockTicker!=""): #if the user has chosen a stock ticker
             name, summary = getStockInfo(stockTicker)    #gets the stock ticker name and summary
@@ -326,13 +364,13 @@ def advancedUploader2():
 
         trainingData = request.files['trainingData']
         trainingData.save(trainingDataSRC)
-      
+    
         outputBatches = int(request.form['outputBatches'])
         print("outputBatches: " + str(outputBatches)) 
         
         lossFunction = request.form['lossFunction']
         print("lossFunction: " + lossFunction)
- 
+
 
         predictionData = request.files['predictionData']
         predictionData.save(predictionDataSRC)
@@ -343,7 +381,7 @@ def advancedUploader2():
         stackedLayers = request.form['stackedLayers']
         print("stackedLayers: " + stackedLayers)
 
-        with open('/var/www/html/StockPredictor/advanced/Parameters.txt', 'w') as f:
+        with open(advancedSRC + 'Parameters.txt', 'w') as f:
             f.write(str(title)+"\n")
             f.write(str(inputBatches)+"\n")
             f.write(str(activationFunction)+"\n")
@@ -356,7 +394,7 @@ def advancedUploader2():
         trainingData=loadCSV(trainingDataSRC, 0)
         predictionData=loadCSV(predictionDataSRC, 0) #load prediction data
 
- 
+
         error=[]
         
 
@@ -387,7 +425,7 @@ def advancedUploader2():
         if (validateCSVData(trainingData, True, (inputBatches+outputBatches)*10, "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
             warning = "Warning: Little training data "
 
-        return render_template('blank.html')
+        return render_template('progress.html')
 
 @app.route('/advancedProgress', methods = ['GET', 'POST'])
 def advancedProgress2():
@@ -399,25 +437,17 @@ def result():
 
 
 def randomNumberGenerator():
-    """
-    Generate a random number every 1 second and emit to a socketio instance (broadcast)
-    Ideally to be run in a separate thread?
-    """
-    #infinite loop of magical random numbers
 
-    #
-    f = open("/var/www/html/FlaskStuff/async_flask/progress.txt", "w")
+    f = open(advancedSRC + "progress.txt", "w")
     f.write("Training")
     f.close()
 
-    os.system("/home/ist/anaconda3/envs/tf_gpu/bin/python /var/www/html/FlaskStuff/async_flask/training.py &")
+    os.system("/home/ist/anaconda3/envs/tf_gpu/bin/python /var/www/html/StockPredictor/advanced.py &")
 
-    second = 0    
-    minute = 0    
-    hour = 0 
-    print("Making random numbers")
-    while not thread_stop_event.isSet():
-        f = open("/var/www/html/FlaskStuff/async_flask/progress.txt", "r")
+    second, minute, hour = 0,0,0    
+
+    while not threadStopEvent.isSet():
+        f = open(advancedSRC + "progress.txt", "r")
         status = f.read()
         print(status)
         f.close()
@@ -458,6 +488,7 @@ def test_connect():
         print("Starting Thread")
         thread = socketio.start_background_task(randomNumberGenerator)
 
+
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
     print('Client disconnected')
@@ -473,6 +504,4 @@ def cool_form():
 
 
 
-if __name__ == '__main__':
-    initModel()
-    socketio.run(app)
+

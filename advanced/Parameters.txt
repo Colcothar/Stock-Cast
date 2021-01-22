@@ -1,7 +1,7 @@
-Test
-4
+hello
+26
 relu
-2
+1
 mse
-100
+10
 Yes
