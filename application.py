@@ -250,7 +250,7 @@ def basicUploader2():
         valid, error = validateCSVData(processedData, True, 60, "basic")
 
         if (valid!=0): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
-            return render_template('error.html', message=error) # return an error if there are not ints OR not enough data
+            return render_template('error.html', message=[error]) # return an error if there are not ints OR not enough data
 
         sc = MinMaxScaler(feature_range = (0, 1)) #defines a new scaling function
 
@@ -422,14 +422,29 @@ def advancedUploader2():
         else:
             print("Both CSV files are valid")
 
+        warning =""
         if (validateCSVData(trainingData, True, (inputBatches+outputBatches)*10, "advanced")[0] == 3): #the user can upload whatever data they want. This function validates that the uploaded data has integers on everyline 
             warning = "Warning: Little training data "
 
-        return render_template('progress.html')
+        return render_template('progress.html', warning=warning)
 
 @app.route('/advancedProgress', methods = ['GET', 'POST'])
 def advancedProgress2():
-    return render_template("blank.html")
+    f = open(advancedSRC + "Parameters.txt", "r")
+    name = f.readline()
+    f.close()
+    
+    for filename in os.listdir(str(staticSRC)):
+        if filename.startswith('advancedPast'):
+            pastSRC = "/static/img/" + filename
+        if filename.startswith("advancedPrediction"):
+            imgSRC = "/static/img/" + filename
+
+    
+    return render_template('predictions.html', stockName=name, imgSRC=imgSRC, pastSRC=pastSRC)
+
+
+    
 
 @app.route('/results')
 def result():
@@ -452,7 +467,7 @@ def randomNumberGenerator():
         print(status)
         f.close()
         if(status=="Training"):
-            print("-----------------------Here")
+
             second+=1    
             if(second == 60):    
                 second = 0    
