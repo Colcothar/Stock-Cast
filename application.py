@@ -277,25 +277,13 @@ def basicUploader2():
         for i in range (len(unscaledY)):
             link.append(unscaledY[i]) #adds the first predicted value. This makes the graph connect up
 
-        
-        f = open(str(staticSRC + 'data.csv'), "w")
-        for row in unscaledY:
-            f.writelines(str(row))
-            f.writelines("\n")
-        f.close()
-
-
         fig = plt.figure()
         plt.plot( [0,1,2,3], processedData[-4:] , "-x", color='red') #this plots the previous stock values in red
         plt.plot( [3,4,5,6,7], link , "-x", color='blue') # this plots the predicted stock values in blue
-        
         plt.xlabel("Day") #provides the label for the X axis
         plt.ylabel("Value") #provides the label for the Y axis
         
-        
-
         newName =  "basicPrediction" + str(time.time()) + ".png"
-
         for filename in os.listdir(str(staticSRC)):
             if filename.startswith('basicPrediction'):  
                 os.remove(str(staticSRC) + filename)
@@ -314,8 +302,11 @@ def basicUploader2():
         the variable pastSRC can then hold the location of past stock data. This can either the trading view widget, OR the location of a locally made graph
         ''' 
 
+        f = open(str(staticSRC + 'data.csv'), "w")
+        
         if(stockTicker!=""): #if the user has chosen a stock ticker
             name, summary = getStockInfo(stockTicker)    #gets the stock ticker name and summary
+            f.writelines(name + "\n")
             pastSRC = "https://s.tradingview.com/widgetembed/?frameElementId=tradingview_ff017&symbol=" + stockTicker + "&interval=D&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=Light&style=1&timezone=Etc%2FUTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source"
         else:
             name, summary = "", ""
@@ -329,20 +320,27 @@ def basicUploader2():
                 if filename.startswith('basicPast'):  # not to remove other images
                     os.remove(str(staticSRC) + filename)
 
-
             plt.savefig(staticSRC + pastNewName) #this saves the generated graph
             plt.close(fig)
 
             pastSRC = "/static/img/" + pastNewName 
-            
-
-
-
-
-        
         imgSRC = "/static/img/" + newName #this variable points to the location of saved image
-        
-        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, imgSRC=imgSRC, pastSRC=pastSRC, summary=summary)
+           
+        for row in processedData[-6:]:
+            f.writelines(str(row) + "\n")
+        f.writelines("\n")    
+        for row in unscaledY:
+            f.writelines(str(row) + "\n")
+        f.close()
+
+        if(processedData[-1] > unscaledY[-1]):
+            colour = "red"
+            change = '  - SELL'
+        else:
+            colour = "blue"
+            change = '  - BUY'
+
+        return render_template('predictions.html', stockName=name, stockTicker=str(stockTicker), link=link, imgSRC=imgSRC, pastSRC=pastSRC, summary=summary, change=change, colour=colour)
 
 @app.route('/advancedUploader', methods = ['GET', 'POST'])
 def advancedUploader2():
