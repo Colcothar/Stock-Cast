@@ -97,7 +97,7 @@ def validateCSVData(processedData,minDataTrue, minData, predictionType=None):
         try: # try converting to int
             int(i)
         except:
-            print(i)
+            print("Error: " + str(i))
             valid = 1
             error= "Data contains non integers"
 
@@ -168,7 +168,8 @@ def getStockData(stockTicker):
     history = stock.history(period="max") #gets history
 
     for i in range(len(history)):
-        rawData.append(float(history["High"][i])) #writes the max stock price of the day to the array
+        if(str(history["High"][i])!="nan"):
+            rawData.append(float(history["High"][i])) #writes the max stock price of the day to the array
     return(rawData) #return array
 
 
