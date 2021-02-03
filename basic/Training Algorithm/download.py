@@ -38,7 +38,7 @@ for i in stocks:
 
         with open("/var/www/html/StockPredictor/basic/Training Algorithm/stockDataLite.csv", "a") as f:
             for x in arr:
-                print(x[0])
+                print(x)
                 f.write((str(x[0])+"\n"))
     except:
         print("----------fail")
