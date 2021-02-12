@@ -129,10 +129,10 @@ def getStockInfo(stock):
 
 
     msft = yf.Ticker(str(stock))
-
+    print(stock)
 
     name = (msft.info['longName']) #Get full name 
-
+    print(name)
     summary = msft.info['longBusinessSummary'] #Get the summary about the company
     sentance = summary.split(". ") #Split the summary into sentences 
 

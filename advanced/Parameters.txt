@@ -1,7 +1,7 @@
-gdh
-29
+
+7
 relu
-1
+6
 mse
-10
-Yes
+2
+No
