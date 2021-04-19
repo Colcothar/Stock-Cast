@@ -203,10 +203,10 @@ plt.close(fig)
      
 
 f = open(advancedSRC + "progress.txt", "w")
-f.write("Complete")
+f.write("Complete") #write to the progress file so the main prorgram knows that training and predictions have finished
 f.close()
 
-f = open(str(staticSRC + 'data.csv'), "w")
+f = open(str(staticSRC + 'data.csv'), "w") #write to the data csv. write the future predicted values. 
 for row in unscaledY:
     f.writelines(str(row))
     f.writelines("\n")
